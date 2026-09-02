@@ -6,15 +6,16 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="My Budget">
-<meta name="theme-color" content="#FAFAFA">
+<meta name="theme-color" content="#0C0E10">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <title>My Budget</title>
 <style>
 :root{
-  --bg:#FAFAFA; --card:#FFFFFF; --ink:#111111; --ink2:#6B6B6B; --ink3:#9C9C9C;
-  --line:#E8E8E8; --line2:#D6D6D6; --red:#B3261E; --green:#1E6B45;
+  --bg:#0C0E10; --card:#16191C; --ink:#F4F6F7; --ink2:#8B9299; --ink3:#5E666D;
+  --line:#24282C; --line2:#31373C; --red:#F26D6D; --green:#5DCAA5; --mint:#5DCAA5; --mintink:#07130E;
   --radius:14px; --safe-top:env(safe-area-inset-top,0px); --safe-bot:env(safe-area-inset-bottom,0px);
+  color-scheme:dark;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -31,7 +32,7 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.02em}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-top:14px}
 .card h2{font-size:13px;font-weight:600;color:var(--ink2);margin-bottom:10px}
-.big{font-size:32px;font-weight:700;letter-spacing:-.02em}
+.big{font-size:34px;font-weight:700;letter-spacing:-.03em}
 .mid{font-size:20px;font-weight:700}
 .muted{color:var(--ink2);font-size:13px}
 .tiny{color:var(--ink3);font-size:12px}
@@ -39,33 +40,33 @@ h1{font-size:26px;font-weight:700;letter-spacing:-.02em}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .rowline{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);gap:10px}
 .rowline:last-child{border-bottom:none}
-.bar{height:6px;background:#EFEFEF;border-radius:3px;overflow:hidden;margin-top:6px}
-.bar>i{display:block;height:100%;background:var(--ink);border-radius:3px;transition:width .3s ease}
+.bar{height:6px;background:#24282C;border-radius:3px;overflow:hidden;margin-top:6px}
+.bar>i{display:block;height:100%;background:var(--mint);border-radius:3px;transition:width .3s ease}
 .bar>i.over{background:var(--red)}
 button{font:inherit;border:none;background:none;color:inherit;cursor:pointer}
-.btn{display:block;width:100%;background:var(--ink);color:#fff;font-weight:600;font-size:15px;padding:14px;border-radius:12px;text-align:center}
+.btn{display:block;width:100%;background:var(--mint);color:var(--mintink);font-weight:600;font-size:15px;padding:14px;border-radius:12px;text-align:center}
 .btn:active{transform:scale(.985)}
 .btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line2)}
 .btn.half{width:auto;flex:1}
 .btnrow{display:flex;gap:10px;margin-top:14px}
 .iconbtn{color:var(--ink3);font-size:13px;padding:6px 8px}
-.chip{font-size:12px;font-weight:600;background:#F0F0F0;border-radius:999px;padding:3px 10px;color:var(--ink2)}
+.chip{font-size:12px;font-weight:600;background:#22262A;border-radius:999px;padding:3px 10px;color:var(--ink2)}
 .cyclenav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px}
 .cyclenav .arrow{width:44px;height:38px;font-size:20px;color:var(--ink2);border-radius:8px}
 .cyclenav .arrow:disabled{opacity:.25}
 .cyclenav .label{font-weight:600;font-size:14px}
 input,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line2);border-radius:10px;padding:12px;width:100%;font-size:16px}
-input:focus,select:focus{outline:2px solid var(--ink);outline-offset:-1px;border-color:var(--ink)}
+input:focus,select:focus{outline:2px solid var(--mint);outline-offset:-1px;border-color:var(--ink)}
 label.f{display:block;margin-top:12px;font-size:13px;font-weight:600;color:var(--ink2)}
 label.f input,label.f select{margin-top:5px}
 .amt-input{text-align:right;width:96px;padding:8px 10px}
 /* Tab bar */
-#tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(255,255,255,.94);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 8px calc(var(--safe-bot) + 8px)}
+#tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(12,14,16,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 8px calc(var(--safe-bot) + 8px)}
 #tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink3);font-size:11px;font-weight:600;padding:4px 0;border-radius:10px}
-#tabbar button.on{color:var(--ink)}
+#tabbar button.on{color:var(--mint)}
 #tabbar svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 /* Modal */
-#overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:50}
+#overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:50}
 #overlay.show{display:flex;align-items:flex-end;justify-content:center}
 #sheet{background:var(--card);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:20px 18px calc(var(--safe-bot) + 20px);max-height:86vh;overflow-y:auto;animation:up .22s ease}
 @keyframes up{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -73,17 +74,28 @@ label.f input,label.f select{margin-top:5px}
 .sheetx{position:absolute;visibility:hidden}
 .danger{color:var(--red);font-weight:600}
 .empty{text-align:center;color:var(--ink3);font-size:14px;padding:26px 10px}
-.seg{display:flex;background:#F0F0F0;border-radius:10px;padding:3px;margin-top:12px}
+.seg{display:flex;background:#1C2024;border-radius:10px;padding:3px;margin-top:12px}
 .seg button{flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ink2)}
-.seg button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--safe-bot) + 92px);background:var(--ink);color:#fff;font-size:14px;font-weight:600;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:60}
+.seg button.on{background:#2A2F34;color:var(--ink)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--safe-bot) + 92px);background:#F4F6F7;color:#0C0E10;font-size:14px;font-weight:600;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:60}
 .toast.show{opacity:1}
-.catdot{width:8px;height:8px;border-radius:50%;background:var(--ink);flex:none}
+.catdot{width:8px;height:8px;border-radius:50%;background:var(--mint);flex:none}
 .exp-desc{font-size:15px;font-weight:600}
 .exp-meta{font-size:12px;color:var(--ink2)}
 .datehead{font-size:12px;font-weight:700;color:var(--ink3);margin:16px 0 2px;text-transform:none;letter-spacing:.02em}
 .paycard{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px}
 .paycard .row{padding:3px 0}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.fchip{flex:none;font-size:13px;font-weight:600;padding:7px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink2)}
+.fchip.on{background:var(--mint);color:var(--mintink);border-color:var(--mint)}
+.statrow{display:flex;gap:8px;margin-top:10px}
+.stat{flex:1;background:#1C2024;border-radius:10px;padding:10px 12px;min-width:0}
+.stat .l{font-size:11px;color:var(--ink2)}
+.stat .v{font-size:15px;font-weight:700;margin-top:2px;overflow:hidden;text-overflow:ellipsis}
+.splitbar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin-top:12px;background:#24282C}
+.legend{display:flex;gap:12px;margin-top:9px;font-size:12px;color:var(--ink2);flex-wrap:wrap}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
 .hidden{display:none !important}
 a{color:inherit}
 </style>
@@ -113,17 +125,20 @@ a{color:inherit}
     <h1>Dashboard</h1><p class="sub" id="dashDate"></p>
     <div class="card">
       <h2>Net worth</h2>
-      <div class="big" id="dashNW">$0</div>
+      <div class="big" id="dashNW" style="color:var(--mint)">$0</div>
       <div class="rowline"><span class="muted">Investments</span><span id="dashInv"></span></div>
       <div class="rowline"><span class="muted">Other assets</span><span id="dashAst"></span></div>
       <div class="rowline"><span class="muted">Liabilities</span><span class="neg" id="dashLia"></span></div>
     </div>
     <div class="card">
       <div class="row"><h2>This cycle</h2><span class="chip" id="dashCycleLabel"></span></div>
-      <div class="row" style="align-items:baseline"><div class="big" id="dashSpent">$0</div><div class="muted" id="dashBudgeted"></div></div>
-      <div class="bar"><i id="dashBar" style="width:0%"></i></div>
-      <div class="rowline"><span class="muted">Net income</span><span id="dashIncome"></span></div>
-      <div class="rowline"><span class="muted">Left to spend</span><span id="dashLeft"></span></div>
+      <div class="statrow">
+        <div class="stat"><div class="l">Income</div><div class="v" id="dashIncome"></div></div>
+        <div class="stat"><div class="l">Spent</div><div class="v" id="dashSpent"></div></div>
+        <div class="stat"><div class="l">Left</div><div class="v" id="dashLeft"></div></div>
+      </div>
+      <div class="bar" style="margin-top:12px"><i id="dashBar" style="width:0%"></i></div>
+      <div class="row" style="margin-top:6px"><span class="tiny" id="dashBudgeted"></span><span class="tiny" id="dashPct"></span></div>
     </div>
     <div class="card">
       <h2>Top categories this cycle</h2>
@@ -173,6 +188,7 @@ a{color:inherit}
       <button class="btn half" onclick="openAddExpense()">+ Add expense</button>
       <button class="btn ghost half" onclick="pickCSV()">Upload CSV</button>
     </div>
+    <div class="chips" id="expChips"></div>
     <div id="expList"></div>
   </div>
 
@@ -181,7 +197,9 @@ a{color:inherit}
     <h1>Accounts</h1><p class="sub">Balances you update by hand.</p>
     <div class="card">
       <h2>Net worth</h2>
-      <div class="big" id="acctNW">$0</div>
+      <div class="big" id="acctNW" style="color:var(--mint)">$0</div>
+      <div class="splitbar" id="nwBar"></div>
+      <div class="legend" id="nwLegend"></div>
     </div>
     <div class="card"><div class="row"><h2>Investments</h2><button class="iconbtn" style="color:var(--ink);font-weight:700" onclick="openAddAccount('investments')">+ Add</button></div><div id="listInvestments"></div></div>
     <div class="card"><div class="row"><h2>Assets</h2><button class="iconbtn" style="color:var(--ink);font-weight:700" onclick="openAddAccount('assets')">+ Add</button></div><div id="listAssets"></div></div>
@@ -214,7 +232,7 @@ a{color:inherit}
 
 <div id="lock" class="hidden" style="position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center;padding:24px">
   <div style="width:100%;max-width:340px;text-align:center">
-    <div style="font-size:44px;font-weight:800;letter-spacing:-.03em">$</div>
+    <div style="font-size:44px;font-weight:800;letter-spacing:-.03em;color:var(--mint)">$</div>
     <h1 style="font-size:22px;margin-top:4px">My Budget</h1>
     <p class="sub" style="margin-top:2px">Enter your PIN to unlock</p>
     <input type="password" inputmode="numeric" autocomplete="off" id="lockPin" style="margin-top:18px;text-align:center;font-size:22px;letter-spacing:.4em" placeholder="••••">
@@ -229,7 +247,10 @@ a{color:inherit}
 <script>
 "use strict";
 const KEY="mybudget.v1", DAY=86400000;
-let S=null, view={tab:"dash", cycle:0};
+let S=null, view={tab:"dash", cycle:0, expFilter:""};
+const CATPAL=["#5DCAA5","#AFA9EC","#85B7EB","#F0997B","#ED93B1","#FAC775","#97C459","#5FB8CA"];
+function catColor(id){const i=S?S.categories.findIndex(c=>c.id===id):-1;if(i<0)return"#8B9299";
+  const c=S.categories[i];if(!c.color)c.color=CATPAL[i%CATPAL.length];return c.color}
 
 /* ---------- utils ---------- */
 const $=id=>document.getElementById(id);
@@ -306,14 +327,16 @@ function renderDash(cur){
   $("dashCycleLabel").textContent=cycleLabel(cur);
   const spent=cycleSpent(cur),bud=cycleAssigned(cur),inc=cycleIncome(cur);
   $("dashSpent").textContent=money0(spent);
-  $("dashBudgeted").textContent="of "+money0(bud)+" budgeted";
+  $("dashIncome").textContent=money0(inc);
+  const left=bud-spent;
+  $("dashLeft").textContent=money0(left);$("dashLeft").className="v "+(left<0?"neg":"pos");
+  $("dashBudgeted").textContent="Budget "+money0(bud);
   const pct=bud>0?Math.min(100,spent/bud*100):0;
+  $("dashPct").textContent=bud>0?Math.round(spent/bud*100)+"% used":"";
   $("dashBar").style.width=pct+"%";$("dashBar").className=spent>bud?"over":"";
-  $("dashIncome").textContent=money(inc);
-  const left=bud-spent;$("dashLeft").textContent=money(left);$("dashLeft").className=left<0?"neg":"";
-  const per=S.categories.map(c=>({n:c.name,v:catSpent(cur,c.id)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,5);
+  const per=S.categories.map(c=>({n:c.name,v:catSpent(cur,c.id),col:catColor(c.id)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,5);
   const mx=per.length?per[0].v:1;
-  $("dashTopCats").innerHTML=per.length?per.map(x=>`<div style="padding:7px 0"><div class="row"><span style="font-size:14px">${esc(x.n)}</span><span style="font-size:14px;font-weight:600">${money0(x.v)}</span></div><div class="bar"><i style="width:${Math.max(3,x.v/mx*100)}%"></i></div></div>`).join(""):`<div class="empty">No spending yet this cycle</div>`;
+  $("dashTopCats").innerHTML=per.length?per.map(x=>`<div style="padding:7px 0"><div class="row"><span style="font-size:14px"><span class="dot" style="background:${x.col}"></span>${esc(x.n)}</span><span style="font-size:14px;font-weight:600">${money0(x.v)}</span></div><div class="bar"><i style="width:${Math.max(3,x.v/mx*100)}%;background:${x.col}"></i></div></div>`).join(""):`<div class="empty">No spending yet this cycle</div>`;
   let h="";for(let i=cur-1;i>=0&&i>=cur-12;i--){const s=cycleSpent(i),b=cycleAssigned(i);
     h+=`<div class="rowline"><div><div style="font-size:14px;font-weight:600">${cycleLabel(i)}</div><div class="tiny">budget ${money0(b)}</div></div><div style="text-align:right"><div style="font-weight:600">${money0(s)}</div><div class="tiny ${s>b?"neg":"pos"}">${s>b?money0(s-b)+" over":money0(b-s)+" under"}</div></div></div>`}
   $("dashHistory").innerHTML=h||`<div class="empty">History appears after your first cycle ends</div>`;
@@ -330,7 +353,7 @@ function renderBudget(){
       <div class="row"><span class="muted">Retirement</span><span>−${money(p.retire)}</span></div>
       <div class="row"><span class="muted">Pre-tax pay</span><span>${money(payTaxable(p))}</span></div>
       <div class="row"><span class="muted">Taxes</span><span>−${money(p.taxes)}</span></div>
-      <div class="row" style="border-top:1px solid var(--line);margin-top:4px;padding-top:7px"><span style="font-weight:700">Net pay</span><span style="font-weight:700">${money(payNet(p))}</span></div>
+      <div class="row" style="border-top:1px solid var(--line);margin-top:4px;padding-top:7px"><span style="font-weight:700">Net pay</span><span style="font-weight:700;color:var(--mint)">${money(payNet(p))}</span></div>
     </div>`).join("");
   $("extraList").innerHTML=c.extras.map(e=>`
     <div class="rowline"><div><div class="exp-desc">${esc(e.desc)}</div><div class="exp-meta">Additional income</div></div>
@@ -339,32 +362,47 @@ function renderBudget(){
   $("zbIncome").textContent=money(inc);$("zbAssigned").textContent=money(asg);
   $("zbLeft").textContent=money(left);$("zbLeft").className="mid "+(Math.abs(left)<0.005?"pos":left<0?"neg":"");
   $("catList").innerHTML=S.categories.length?S.categories.map(ct=>{
-    const a=+c.budget[ct.id]||0,sp=catSpent(i,ct.id),over=sp>a&&a>0;
+    const a=+c.budget[ct.id]||0,sp=catSpent(i,ct.id),over=sp>a&&a>0,col=catColor(ct.id);
     return `<div style="padding:10px 0;border-bottom:1px solid var(--line)">
-      <div class="row"><button style="font-size:15px;font-weight:600;text-align:left" onclick="openEditCategory('${ct.id}')">${esc(ct.name)}</button>
+      <div class="row"><button style="font-size:15px;font-weight:600;text-align:left" onclick="openEditCategory('${ct.id}')"><span class="dot" style="background:${col}"></span>${esc(ct.name)}</button>
       <input class="amt-input" type="number" inputmode="decimal" step="0.01" value="${a||""}" placeholder="0" onchange="setBudget('${ct.id}',this.value)"></div>
-      <div class="bar"><i class="${over?"over":""}" style="width:${a>0?Math.min(100,sp/a*100):sp>0?100:0}%"></i></div>
+      <div class="bar"><i class="${over?"over":""}" style="width:${a>0?Math.min(100,sp/a*100):sp>0?100:0}%${over?"":";background:"+col}"></i></div>
       <div class="row" style="margin-top:4px"><span class="tiny">spent ${money0(sp)}</span><span class="tiny ${over?"neg":""}">${over?money0(sp-a)+" over":money0(a-sp)+" left"}</span></div>
     </div>`}).join(""):`<div class="empty">Add your first category to start assigning dollars</div>`;
 }
+function setExpFilter(id){view.expFilter=id;render()}
 function renderExpenses(){
   const i=view.cycle,cur=cycleCount()-1;
   $("expCycleLabel").textContent=cycleLabel(i)+(i===cur?" · current":"");
   $("expPrev").disabled=i===0;$("expNext").disabled=i===cur;
-  const list=cycleExpenses(i).sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
-  $("expTotalSub").textContent=money(cycleSpent(i))+" spent this cycle";
-  if(!list.length){$("expList").innerHTML=`<div class="empty">No expenses in this cycle yet</div>`;return}
+  if(view.expFilter&&!S.categories.some(c=>c.id===view.expFilter))view.expFilter="";
+  const all=cycleExpenses(i);
+  const list=all.filter(e=>!view.expFilter||e.catId===view.expFilter)
+    .sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+  const tot=list.reduce((s,e)=>s+(+e.amount||0),0);
+  $("expTotalSub").textContent=view.expFilter
+    ?money(tot)+" on "+catName(view.expFilter)+" this cycle"
+    :money(tot)+" spent this cycle";
+  $("expChips").innerHTML=`<button class="fchip ${view.expFilter?"":"on"}" onclick="setExpFilter('')">All</button>`+
+    S.categories.map(c=>`<button class="fchip ${view.expFilter===c.id?"on":""}" onclick="setExpFilter('${c.id}')"><span class="dot" style="background:${catColor(c.id)};margin-right:5px"></span>${esc(c.name)}</button>`).join("");
+  if(!list.length){$("expList").innerHTML=`<div class="empty">${view.expFilter?"No "+esc(catName(view.expFilter))+" expenses this cycle":"No expenses in this cycle yet"}</div>`;return}
   let html="",lastDate="";
   list.forEach(e=>{
     if(e.date!==lastDate){html+=`<div class="datehead">${fmtDateY(e.date)}</div>`;lastDate=e.date}
     html+=`<div class="card" style="margin-top:8px;padding:12px 14px"><div class="row">
-      <div style="min-width:0"><div class="exp-desc">${esc(e.desc)}</div><div class="exp-meta">${esc(catName(e.catId))}</div></div>
+      <div style="min-width:0"><div class="exp-desc">${esc(e.desc)}</div><div class="exp-meta" style="color:${catColor(e.catId)}">${esc(catName(e.catId))}</div></div>
       <div style="text-align:right;flex:none"><div style="font-weight:700">${money(e.amount)}</div><button class="iconbtn danger" onclick="delExpense('${e.id}')">Delete</button></div>
     </div></div>`});
   $("expList").innerHTML=html;
 }
 function renderAccounts(){
   $("acctNW").textContent=money(netWorth());
+  const inv=sumA("investments"),ast=sumA("assets"),lia=sumA("liabilities"),tot=inv+ast+lia;
+  if(tot>0){
+    const w=v=>Math.max(v>0?2:0,v/tot*100);
+    $("nwBar").innerHTML=`<span style="width:${w(inv)}%;background:#5DCAA5"></span><span style="width:${w(ast)}%;background:#2E7D64"></span><span style="width:${w(lia)}%;background:#F26D6D"></span>`;
+    $("nwLegend").innerHTML=`<span><span class="dot" style="background:#5DCAA5"></span>Investments ${money0(inv)}</span><span><span class="dot" style="background:#2E7D64"></span>Assets ${money0(ast)}</span><span><span class="dot" style="background:#F26D6D"></span>Debt ${money0(lia)}</span>`;
+  }else{$("nwBar").innerHTML="";$("nwLegend").innerHTML=`<span>Add balances below to see your breakdown</span>`}
   const sec=(k,neg)=>$("list"+k[0].toUpperCase()+k.slice(1)).innerHTML=S.accounts[k].length?S.accounts[k].map(a=>`
     <div class="rowline"><button style="font-size:15px;font-weight:600;text-align:left" onclick="openEditAccount('${k}','${a.id}')">${esc(a.name)}</button>
     <span style="font-weight:600" class="${neg?"neg":""}">${neg?"−":""}${money(a.balance)}</span></div>`).join("")
