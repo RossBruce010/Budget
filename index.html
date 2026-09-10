@@ -141,7 +141,7 @@ a{color:inherit}
       <div class="row" style="margin-top:6px"><span class="tiny" id="dashBudgeted"></span><span class="tiny" id="dashPct"></span></div>
     </div>
     <div class="card">
-      <h2>Top categories this cycle</h2>
+      <h2>Budget vs spent</h2>
       <div id="dashTopCats"></div>
     </div>
     <div class="card">
@@ -251,6 +251,7 @@ let S=null, view={tab:"dash", cycle:0, expFilter:""};
 const CATPAL=["#5DCAA5","#AFA9EC","#85B7EB","#F0997B","#ED93B1","#FAC775","#97C459","#5FB8CA"];
 function catColor(id){const i=S?S.categories.findIndex(c=>c.id===id):-1;if(i<0)return"#8B9299";
   const c=S.categories[i];if(!c.color)c.color=CATPAL[i%CATPAL.length];return c.color}
+function goCategory(id){view.expFilter=id;showTab("exp")}
 
 /* ---------- utils ---------- */
 const $=id=>document.getElementById(id);
@@ -334,9 +335,18 @@ function renderDash(cur){
   const pct=bud>0?Math.min(100,spent/bud*100):0;
   $("dashPct").textContent=bud>0?Math.round(spent/bud*100)+"% used":"";
   $("dashBar").style.width=pct+"%";$("dashBar").className=spent>bud?"over":"";
-  const per=S.categories.map(c=>({n:c.name,v:catSpent(cur,c.id),col:catColor(c.id)})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v).slice(0,5);
-  const mx=per.length?per[0].v:1;
-  $("dashTopCats").innerHTML=per.length?per.map(x=>`<div style="padding:7px 0"><div class="row"><span style="font-size:14px"><span class="dot" style="background:${x.col}"></span>${esc(x.n)}</span><span style="font-size:14px;font-weight:600">${money0(x.v)}</span></div><div class="bar"><i style="width:${Math.max(3,x.v/mx*100)}%;background:${x.col}"></i></div></div>`).join(""):`<div class="empty">No spending yet this cycle</div>`;
+  const cyc=ensureCycle(cur);
+  const per=S.categories.map(c=>({id:c.id,n:c.name,v:catSpent(cur,c.id),b:+cyc.budget[c.id]||0,col:catColor(c.id)}))
+    .filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+  $("dashTopCats").innerHTML=per.length?per.map(x=>{
+    const over=x.b>0&&x.v>x.b;
+    const meta=x.b>0?(over?money0(x.v-x.b)+" over":money0(x.b-x.v)+" left"):"no budget set";
+    return `<button style="display:block;width:100%;text-align:left;padding:8px 0" onclick="goCategory('${x.id}')">
+      <div class="row"><span style="font-size:14px"><span class="dot" style="background:${x.col}"></span>${esc(x.n)}</span>
+      <span style="font-size:13px;font-weight:600">${money0(x.v)}<span class="muted" style="font-weight:400"> of ${money0(x.b)}</span></span></div>
+      <div class="bar"><i class="${over?"over":""}" style="width:${x.b>0?Math.min(100,x.v/x.b*100):100}%${over?"":";background:"+x.col}"></i></div>
+      <div class="row" style="margin-top:4px"><span class="tiny">tap to view expenses</span><span class="tiny ${over?"neg":""}">${meta}</span></div>
+    </button>`}).join(""):`<div class="empty">No spending yet this cycle</div>`;
   let h="";for(let i=cur-1;i>=0&&i>=cur-12;i--){const s=cycleSpent(i),b=cycleAssigned(i);
     h+=`<div class="rowline"><div><div style="font-size:14px;font-weight:600">${cycleLabel(i)}</div><div class="tiny">budget ${money0(b)}</div></div><div style="text-align:right"><div style="font-weight:600">${money0(s)}</div><div class="tiny ${s>b?"neg":"pos"}">${s>b?money0(s-b)+" over":money0(b-s)+" under"}</div></div></div>`}
   $("dashHistory").innerHTML=h||`<div class="empty">History appears after your first cycle ends</div>`;
@@ -366,8 +376,9 @@ function renderBudget(){
     return `<div style="padding:10px 0;border-bottom:1px solid var(--line)">
       <div class="row"><button style="font-size:15px;font-weight:600;text-align:left" onclick="openEditCategory('${ct.id}')"><span class="dot" style="background:${col}"></span>${esc(ct.name)}</button>
       <input class="amt-input" type="number" inputmode="decimal" step="0.01" value="${a||""}" placeholder="0" onchange="setBudget('${ct.id}',this.value)"></div>
+      <button style="display:block;width:100%;text-align:left" onclick="goCategory('${ct.id}')">
       <div class="bar"><i class="${over?"over":""}" style="width:${a>0?Math.min(100,sp/a*100):sp>0?100:0}%${over?"":";background:"+col}"></i></div>
-      <div class="row" style="margin-top:4px"><span class="tiny">spent ${money0(sp)}</span><span class="tiny ${over?"neg":""}">${over?money0(sp-a)+" over":money0(a-sp)+" left"}</span></div>
+      <div class="row" style="margin-top:4px"><span class="tiny">spent ${money0(sp)} · tap for detail</span><span class="tiny ${over?"neg":""}">${over?money0(sp-a)+" over":money0(a-sp)+" left"}</span></button></div>
     </div>`}).join(""):`<div class="empty">Add your first category to start assigning dollars</div>`;
 }
 function setExpFilter(id){view.expFilter=id;render()}
@@ -383,16 +394,17 @@ function renderExpenses(){
   $("expTotalSub").textContent=view.expFilter
     ?money(tot)+" on "+catName(view.expFilter)+" this cycle"
     :money(tot)+" spent this cycle";
+  const chipCats=[...S.categories].sort((a,b)=>catSpent(i,b.id)-catSpent(i,a.id)||a.name.localeCompare(b.name));
   $("expChips").innerHTML=`<button class="fchip ${view.expFilter?"":"on"}" onclick="setExpFilter('')">All</button>`+
-    S.categories.map(c=>`<button class="fchip ${view.expFilter===c.id?"on":""}" onclick="setExpFilter('${c.id}')"><span class="dot" style="background:${catColor(c.id)};margin-right:5px"></span>${esc(c.name)}</button>`).join("");
+    chipCats.map(c=>`<button class="fchip ${view.expFilter===c.id?"on":""}" onclick="setExpFilter('${c.id}')"><span class="dot" style="background:${catColor(c.id)};margin-right:5px"></span>${esc(c.name)}</button>`).join("");
   if(!list.length){$("expList").innerHTML=`<div class="empty">${view.expFilter?"No "+esc(catName(view.expFilter))+" expenses this cycle":"No expenses in this cycle yet"}</div>`;return}
   let html="",lastDate="";
   list.forEach(e=>{
     if(e.date!==lastDate){html+=`<div class="datehead">${fmtDateY(e.date)}</div>`;lastDate=e.date}
-    html+=`<div class="card" style="margin-top:8px;padding:12px 14px"><div class="row">
+    html+=`<button class="card" style="display:block;width:100%;text-align:left;margin-top:8px;padding:12px 14px" onclick="openEditExpense('${e.id}')"><div class="row">
       <div style="min-width:0"><div class="exp-desc">${esc(e.desc)}</div><div class="exp-meta" style="color:${catColor(e.catId)}">${esc(catName(e.catId))}</div></div>
-      <div style="text-align:right;flex:none"><div style="font-weight:700">${money(e.amount)}</div><button class="iconbtn danger" onclick="delExpense('${e.id}')">Delete</button></div>
-    </div></div>`});
+      <div style="text-align:right;flex:none"><div style="font-weight:700">${money(e.amount)}</div><div class="tiny">tap to edit</div></div>
+    </div></button>`});
   $("expList").innerHTML=html;
 }
 function renderAccounts(){
@@ -496,10 +508,28 @@ function saveExpense(){
   view.cycle=Math.min(cycleCount()-1,cycleIndexFor(dt));
   closeSheet();render();toast("Expense added")
 }
+function openEditExpense(id){
+  const e=S.expenses.find(x=>x.id===id);if(!e)return;
+  sheet(`<h3>Edit expense</h3>
+    ${fld("Amount",`<input type="number" inputmode="decimal" step="0.01" id="eAmt" value="${e.amount}">`)}
+    ${fld("Description",`<input id="eDesc" value="${esc(e.desc)}">`)}
+    ${fld("Category",`<select id="eCat">${catOptions(e.catId)}</select>`)}
+    ${fld("Date",`<input type="date" id="eDate" value="${e.date}">`)}
+    <div class="btnrow"><button class="btn" onclick="saveEditExpense('${id}')">Save changes</button></div>
+    <div class="btnrow"><button class="btn ghost danger" onclick="delExpense('${id}')">Delete expense</button></div>`)
+}
+function saveEditExpense(id){
+  const e=S.expenses.find(x=>x.id===id);if(!e)return;
+  const a=+$("eAmt").value,dt=$("eDate").value;
+  if(!(a>0)){toast("Enter an amount");return}
+  if(!dt){toast("Pick a date");return}
+  e.amount=a;e.desc=$("eDesc").value.trim()||"Expense";e.catId=$("eCat").value;e.date=dt;
+  closeSheet();render();toast("Expense updated")
+}
 function delExpense(id){
   const e=S.expenses.find(x=>x.id===id);if(!e)return;
   if(!confirm(`Delete "${e.desc}" (${money(e.amount)})? Use this if a charge was reversed.`))return;
-  S.expenses=S.expenses.filter(x=>x.id!==id);render();toast("Expense deleted")
+  S.expenses=S.expenses.filter(x=>x.id!==id);closeSheet();render();toast("Expense deleted")
 }
 
 /* ---------- accounts sheets ---------- */
