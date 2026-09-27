@@ -12,7 +12,7 @@
 <title>My Budget</title>
 <style>
 :root{
-  --bg:#0C0E10; --card:#16191C; --ink:#F4F6F7; --ink2:#8B9299; --ink3:#5E666D;
+  --bg:#0C0E10; --card:#16191C; --card2:#1C2024; --ink:#F4F6F7; --ink2:#8B9299; --ink3:#5E666D;
   --line:#24282C; --line2:#31373C; --red:#F26D6D; --green:#5DCAA5; --mint:#5DCAA5; --mintink:#07130E;
   --radius:14px; --safe-top:env(safe-area-inset-top,0px); --safe-bot:env(safe-area-inset-bottom,0px);
   color-scheme:dark;
@@ -51,15 +51,28 @@ button{font:inherit;border:none;background:none;color:inherit;cursor:pointer}
 .btnrow{display:flex;gap:10px;margin-top:14px}
 .iconbtn{color:var(--ink3);font-size:13px;padding:6px 8px}
 .chip{font-size:12px;font-weight:600;background:#22262A;border-radius:999px;padding:3px 10px;color:var(--ink2)}
+.chip.on{background:var(--mint);color:var(--mintink)}
 .cyclenav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px}
 .cyclenav .arrow{width:44px;height:38px;font-size:20px;color:var(--ink2);border-radius:8px}
 .cyclenav .arrow:disabled{opacity:.25}
 .cyclenav .label{font-weight:600;font-size:14px}
 input,select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line2);border-radius:10px;padding:12px;width:100%;font-size:16px}
-input:focus,select:focus{outline:2px solid var(--mint);outline-offset:-1px;border-color:var(--ink)}
+input:focus,select:focus{outline:2px solid var(--mint);outline-offset:-1px;border-color:var(--mint)}
 label.f{display:block;margin-top:12px;font-size:13px;font-weight:600;color:var(--ink2)}
 label.f input,label.f select{margin-top:5px}
-.amt-input{text-align:right;width:96px;padding:8px 10px}
+.amt-input{text-align:right;padding:9px 10px;font-size:15px}
+.statrow{display:flex;gap:8px;margin-top:10px}
+.stat{flex:1;background:var(--card2);border-radius:10px;padding:10px 12px;min-width:0}
+.stat .l{font-size:11px;color:var(--ink2)}
+.stat .v{font-size:15px;font-weight:700;margin-top:2px;overflow:hidden;text-overflow:ellipsis}
+.splitbar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin-top:12px;background:#24282C}
+.legend{display:flex;gap:12px;margin-top:9px;font-size:12px;color:var(--ink2);flex-wrap:wrap}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.paycard{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px}
+.paycard .row{padding:3px 0}
+.pgrid{display:flex;gap:8px;margin-top:8px}
+.pgrid .pcol{flex:1}
+.pgrid .pl{font-size:11px;color:var(--ink3);margin-bottom:4px}
 /* Tab bar */
 #tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(12,14,16,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 8px calc(var(--safe-bot) + 8px)}
 #tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink3);font-size:11px;font-weight:600;padding:4px 0;border-radius:10px}
@@ -71,31 +84,10 @@ label.f input,label.f select{margin-top:5px}
 #sheet{background:var(--card);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:20px 18px calc(var(--safe-bot) + 20px);max-height:86vh;overflow-y:auto;animation:up .22s ease}
 @keyframes up{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
 #sheet h3{font-size:18px;font-weight:700}
-.sheetx{position:absolute;visibility:hidden}
 .danger{color:var(--red);font-weight:600}
 .empty{text-align:center;color:var(--ink3);font-size:14px;padding:26px 10px}
-.seg{display:flex;background:#1C2024;border-radius:10px;padding:3px;margin-top:12px}
-.seg button{flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ink2)}
-.seg button.on{background:#2A2F34;color:var(--ink)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--safe-bot) + 92px);background:#F4F6F7;color:#0C0E10;font-size:14px;font-weight:600;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:60}
 .toast.show{opacity:1}
-.catdot{width:8px;height:8px;border-radius:50%;background:var(--mint);flex:none}
-.exp-desc{font-size:15px;font-weight:600}
-.exp-meta{font-size:12px;color:var(--ink2)}
-.datehead{font-size:12px;font-weight:700;color:var(--ink3);margin:16px 0 2px;text-transform:none;letter-spacing:.02em}
-.paycard{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-top:10px}
-.paycard .row{padding:3px 0}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.chips::-webkit-scrollbar{display:none}
-.fchip{flex:none;font-size:13px;font-weight:600;padding:7px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--ink2)}
-.fchip.on{background:var(--mint);color:var(--mintink);border-color:var(--mint)}
-.statrow{display:flex;gap:8px;margin-top:10px}
-.stat{flex:1;background:#1C2024;border-radius:10px;padding:10px 12px;min-width:0}
-.stat .l{font-size:11px;color:var(--ink2)}
-.stat .v{font-size:15px;font-weight:700;margin-top:2px;overflow:hidden;text-overflow:ellipsis}
-.splitbar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin-top:12px;background:#24282C}
-.legend{display:flex;gap:12px;margin-top:9px;font-size:12px;color:var(--ink2);flex-wrap:wrap}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
 .hidden{display:none !important}
 a{color:inherit}
 </style>
@@ -106,7 +98,7 @@ a{color:inherit}
   <div id="setup" class="screen">
     <div style="padding-top:40px">
       <h1>My Budget</h1>
-      <p class="sub">Zero-based budgeting on a four-week cycle.</p>
+      <p class="sub">Plan every dollar across your two paychecks.</p>
       <div class="card">
         <h2>Set your pay cycle</h2>
         <p class="muted">Pick the date of a recent payday. Your four-week cycle starts there and includes two paychecks. Everything rolls forward automatically.</p>
@@ -126,33 +118,32 @@ a{color:inherit}
     <div class="card">
       <h2>Net worth</h2>
       <div class="big" id="dashNW" style="color:var(--mint)">$0</div>
-      <div class="rowline"><span class="muted">Investments</span><span id="dashInv"></span></div>
-      <div class="rowline"><span class="muted">Other assets</span><span id="dashAst"></span></div>
-      <div class="rowline"><span class="muted">Liabilities</span><span class="neg" id="dashLia"></span></div>
+      <div class="splitbar" id="nwBarD"></div>
+      <div class="legend" id="nwLegendD"></div>
     </div>
     <div class="card">
-      <div class="row"><h2>This cycle</h2><span class="chip" id="dashCycleLabel"></span></div>
+      <div class="row"><h2>Current period</h2><span class="chip on" id="dashPeriodChip"></span></div>
+      <p class="muted" id="dashPeriodRange"></p>
       <div class="statrow">
-        <div class="stat"><div class="l">Income</div><div class="v" id="dashIncome"></div></div>
-        <div class="stat"><div class="l">Spent</div><div class="v" id="dashSpent"></div></div>
-        <div class="stat"><div class="l">Left</div><div class="v" id="dashLeft"></div></div>
+        <div class="stat"><div class="l">Paycheck (net)</div><div class="v" id="dashPNet"></div></div>
+        <div class="stat"><div class="l">Planned</div><div class="v" id="dashPAssigned"></div></div>
+        <div class="stat"><div class="l">Unassigned</div><div class="v" id="dashPLeft"></div></div>
       </div>
-      <div class="bar" style="margin-top:12px"><i id="dashBar" style="width:0%"></i></div>
-      <div class="row" style="margin-top:6px"><span class="tiny" id="dashBudgeted"></span><span class="tiny" id="dashPct"></span></div>
+      <div class="rowline" style="margin-top:8px"><span class="muted" id="dashNextPay"></span><span class="tiny" id="dashDays"></span></div>
     </div>
     <div class="card">
-      <h2>Budget vs spent</h2>
-      <div id="dashTopCats"></div>
+      <div class="row"><h2>To pay this period</h2><span class="tiny" id="dashPayCount"></span></div>
+      <div id="dashPayList"></div>
     </div>
     <div class="card">
-      <h2>Past cycles</h2>
-      <div id="dashHistory"></div>
+      <h2>Next period preview</h2>
+      <div id="dashNextList"></div>
     </div>
   </div>
 
   <!-- BUDGET -->
   <div id="tab-budget" class="screen">
-    <h1>Budget</h1><p class="sub">Give every dollar a job.</p>
+    <h1>Budget</h1><p class="sub">Split every dollar across Payment 1 and 2.</p>
     <div class="cyclenav">
       <button class="arrow" id="budPrev" onclick="shiftCycle(-1)">‹</button>
       <span class="label" id="budCycleLabel"></span>
@@ -165,31 +156,13 @@ a{color:inherit}
       <div class="btnrow"><button class="btn ghost" onclick="openExtraIncome()">+ Additional income</button></div>
     </div>
     <div class="card">
-      <h2>Zero-based summary</h2>
-      <div class="rowline"><span class="muted">Net income</span><span id="zbIncome"></span></div>
-      <div class="rowline"><span class="muted">Assigned to categories</span><span id="zbAssigned"></span></div>
-      <div class="rowline"><span style="font-weight:700">Left to assign</span><span class="mid" id="zbLeft"></span></div>
+      <h2>Zero-based check</h2>
+      <div id="zbTable"></div>
     </div>
     <div class="card">
-      <div class="row"><h2>Categories</h2><button class="iconbtn" style="color:var(--ink);font-weight:700" onclick="openAddCategory()">+ Add</button></div>
+      <div class="row"><h2>Categories</h2><button class="iconbtn" style="color:var(--mint);font-weight:700" onclick="openAddCategory()">+ Add</button></div>
       <div id="catList"></div>
     </div>
-  </div>
-
-  <!-- EXPENSES -->
-  <div id="tab-exp" class="screen">
-    <h1>Expenses</h1><p class="sub" id="expTotalSub"></p>
-    <div class="cyclenav">
-      <button class="arrow" id="expPrev" onclick="shiftCycle(-1)">‹</button>
-      <span class="label" id="expCycleLabel"></span>
-      <button class="arrow" id="expNext" onclick="shiftCycle(1)">›</button>
-    </div>
-    <div class="btnrow">
-      <button class="btn half" onclick="openAddExpense()">+ Add expense</button>
-      <button class="btn ghost half" onclick="pickCSV()">Upload CSV</button>
-    </div>
-    <div class="chips" id="expChips"></div>
-    <div id="expList"></div>
   </div>
 
   <!-- ACCOUNTS -->
@@ -201,9 +174,9 @@ a{color:inherit}
       <div class="splitbar" id="nwBar"></div>
       <div class="legend" id="nwLegend"></div>
     </div>
-    <div class="card"><div class="row"><h2>Investments</h2><button class="iconbtn" style="color:var(--ink);font-weight:700" onclick="openAddAccount('investments')">+ Add</button></div><div id="listInvestments"></div></div>
-    <div class="card"><div class="row"><h2>Assets</h2><button class="iconbtn" style="color:var(--ink);font-weight:700" onclick="openAddAccount('assets')">+ Add</button></div><div id="listAssets"></div></div>
-    <div class="card"><div class="row"><h2>Liabilities</h2><button class="iconbtn" style="color:var(--ink);font-weight:700" onclick="openAddAccount('liabilities')">+ Add</button></div><div id="listLiabilities"></div></div>
+    <div class="card"><div class="row"><h2>Investments</h2><button class="iconbtn" style="color:var(--mint);font-weight:700" onclick="openAddAccount('investments')">+ Add</button></div><div id="listInvestments"></div></div>
+    <div class="card"><div class="row"><h2>Assets</h2><button class="iconbtn" style="color:var(--mint);font-weight:700" onclick="openAddAccount('assets')">+ Add</button></div><div id="listAssets"></div></div>
+    <div class="card"><div class="row"><h2>Liabilities</h2><button class="iconbtn" style="color:var(--mint);font-weight:700" onclick="openAddAccount('liabilities')">+ Add</button></div><div id="listLiabilities"></div></div>
     <div class="card">
       <h2>App lock</h2>
       <p class="muted" id="lockStatus"></p>
@@ -226,7 +199,6 @@ a{color:inherit}
 <nav id="tabbar" class="hidden">
   <button id="tb-dash" onclick="showTab('dash')"><svg viewBox="0 0 24 24"><path d="M3 12l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Dashboard</button>
   <button id="tb-budget" onclick="showTab('budget')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 15c.5 1 1.5 1.5 2.5 1.5 1.7 0 2.8-.8 2.8-2.2 0-2.8-5.3-1.6-5.3-4.3 0-1.3 1-2 2.5-2 1 0 1.9.4 2.4 1.2"/></svg>Budget</button>
-  <button id="tb-exp" onclick="showTab('exp')"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>Expenses</button>
   <button id="tb-acct" onclick="showTab('acct')"><svg viewBox="0 0 24 24"><path d="M3 10l9-6 9 6"/><path d="M5 10v9M9.5 10v9M14.5 10v9M19 10v9M3 19.5h18"/></svg>Accounts</button>
 </nav>
 
@@ -242,16 +214,12 @@ a{color:inherit}
 </div>
 <div id="overlay" onclick="if(event.target===this)closeSheet()"><div id="sheet"></div></div>
 <div class="toast" id="toast"></div>
-<input type="file" id="fileCSV" accept=".csv,text/csv" class="hidden">
 <input type="file" id="fileImport" accept=".json,application/json" class="hidden">
 <script>
 "use strict";
 const KEY="mybudget.v1", DAY=86400000;
-let S=null, view={tab:"dash", cycle:0, expFilter:""};
+let S=null, view={tab:"dash", cycle:0};
 const CATPAL=["#5DCAA5","#AFA9EC","#85B7EB","#F0997B","#ED93B1","#FAC775","#97C459","#5FB8CA"];
-function catColor(id){const i=S?S.categories.findIndex(c=>c.id===id):-1;if(i<0)return"#8B9299";
-  const c=S.categories[i];if(!c.color)c.color=CATPAL[i%CATPAL.length];return c.color}
-function goCategory(id){view.expFilter=id;showTab("exp")}
 
 /* ---------- utils ---------- */
 const $=id=>document.getElementById(id);
@@ -265,6 +233,9 @@ const fmtDate=s=>toDate(s).toLocaleDateString(undefined,{month:"short",day:"nume
 const fmtDateY=s=>toDate(s).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
 const todayISO=()=>iso(new Date());
 function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");clearTimeout(t._x);t._x=setTimeout(()=>t.classList.remove("show"),2200)}
+function catColor(id){const i=S?S.categories.findIndex(c=>c.id===id):-1;if(i<0)return"#8B9299";
+  const c=S.categories[i];if(!c.color)c.color=CATPAL[i%CATPAL.length];return c.color}
+const catName=id=>{const c=S.categories.find(c=>c.id===id);return c?c.name:"—"};
 
 /* ---------- state ---------- */
 function blank(start){return{settings:{cycleStart:start},categories:[],cycles:{},expenses:[],
@@ -272,7 +243,36 @@ function blank(start){return{settings:{cycleStart:start},categories:[],cycles:{}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast("Warning: could not save data")}}
 function load(){try{const r=localStorage.getItem(KEY);if(r)S=JSON.parse(r)}catch(e){S=null}}
 
-/* ---------- cycles ---------- */
+/* ---------- migration: single-amount budgets -> per-payment splits ---------- */
+const XLSPLIT={"Arthur Education":[1000,0],"SoFi Loan":[200,0],"Credit Card":[900,0],"Car Insurance":[130,0],
+  "Personal Phones":[125,0],"Groceries":[350,350],"Auto/Transport":[100,100],"Technology":[0,100],
+  "Utilities":[0,200],"Rent / mortgage":[0,1988],"Eating Out":[50,50],"Entertainment":[100,100],
+  "Juanita":[150,150],"Arthur":[100,100],"Other":[87,154],"Savings":[0,0]};
+function bArr(v){if(Array.isArray(v))return[+v[0]||0,+v[1]||0];const n=+v||0;const h=Math.round(n*50)/100;return[h,Math.round((n-h)*100)/100]}
+function migrateState(){
+  if(!S)return;
+  const cur=cycleIndexFor(todayISO());
+  Object.keys(S.cycles).forEach(k=>{
+    const c=S.cycles[k];
+    (c.paychecks||[]).forEach(p=>{
+      if(p.life==null){
+        if(+p.gross===4615&&+p.health===211){p.health=192;p.life=19}
+        else p.life=0;
+      }});
+    (c.extras||[]).forEach(x=>{if(x.per==null)x.per=0});
+    const nb={};
+    Object.keys(c.budget||{}).forEach(catId=>{
+      const v=c.budget[catId];
+      if(Array.isArray(v)){nb[catId]=bArr(v);return}
+      const nm=catName(catId);
+      if(+k>=cur&&XLSPLIT[nm]!==undefined)nb[catId]=[...XLSPLIT[nm]];
+      else nb[catId]=bArr(v);
+    });
+    c.budget=nb;
+  });
+}
+
+/* ---------- cycles & periods ---------- */
 const cycleCount=()=>cycleIndexFor(todayISO())+1;
 function cycleIndexFor(dateStr){const d=Math.floor((toDate(dateStr)-toDate(S.settings.cycleStart))/DAY);return Math.max(0,Math.floor(d/28))}
 function cycleRange(i){const a=new Date(toDate(S.settings.cycleStart).getTime()+i*28*DAY);const b=new Date(a.getTime()+27*DAY);return{start:iso(a),end:iso(b)}}
@@ -281,21 +281,40 @@ function ensureCycle(i){
   if(S.cycles[i])return S.cycles[i];
   let prev=null;for(let k=i-1;k>=0;k--){if(S.cycles[k]){prev=S.cycles[k];break}}
   const r=cycleRange(i);
-  const mkPay=(n,src)=>({id:uid(),label:"Paycheck "+n,date:iso(new Date(toDate(r.start).getTime()+(n-1)*14*DAY)),
-    gross:src?src.gross:0,taxes:src?src.taxes:0,retire:src?src.retire:0,health:src?src.health:0});
+  const mkPay=(n,src)=>({id:uid(),label:src&&src.label?src.label:"Paycheck "+n,date:iso(new Date(toDate(r.start).getTime()+(n-1)*14*DAY)),
+    gross:src?+src.gross||0:0,taxes:src?+src.taxes||0:0,retire:src?+src.retire||0:0,health:src?+src.health||0:0,life:src?+src.life||0:0});
   const c={paychecks:[mkPay(1,prev&&prev.paychecks[0]),mkPay(2,prev&&prev.paychecks[1])],extras:[],budget:{}};
-  if(prev)c.budget={...prev.budget};else S.categories.forEach(ct=>c.budget[ct.id]=0);
+  if(prev)Object.keys(prev.budget).forEach(k=>c.budget[k]=bArr(prev.budget[k]));
+  else S.categories.forEach(ct=>c.budget[ct.id]=[0,0]);
   S.cycles[i]=c;return c;
 }
 function ensureUpTo(i){for(let k=0;k<=i;k++)ensureCycle(k)}
-const payTaxable=p=>(+p.gross||0)-(+p.health||0)-(+p.retire||0);
+const payTaxable=p=>(+p.gross||0)-(+p.health||0)-(+p.life||0)-(+p.retire||0);
 const payNet=p=>payTaxable(p)-(+p.taxes||0);
-function cycleIncome(i){const c=ensureCycle(i);return c.paychecks.reduce((a,p)=>a+payNet(p),0)+c.extras.reduce((a,e)=>a+(+e.amount||0),0)}
-function cycleAssigned(i){const c=ensureCycle(i);return Object.values(c.budget).reduce((a,v)=>a+(+v||0),0)}
-function cycleExpenses(i){const r=cycleRange(i);return S.expenses.filter(e=>e.date>=r.start&&e.date<=r.end)}
-function cycleSpent(i){return cycleExpenses(i).reduce((a,e)=>a+(+e.amount||0),0)}
-function catSpent(i,catId){return cycleExpenses(i).filter(e=>e.catId===catId).reduce((a,e)=>a+(+e.amount||0),0)}
-const catName=id=>{const c=S.categories.find(c=>c.id===id);return c?c.name:"Uncategorized"};
+function perExtras(i,per){return ensureCycle(i).extras.filter(x=>(+x.per||0)===per).reduce((a,x)=>a+(+x.amount||0),0)}
+function perIncome(i,per){return payNet(ensureCycle(i).paychecks[per])+perExtras(i,per)}
+function perAssigned(i,per){const c=ensureCycle(i);return Object.values(c.budget).reduce((a,v)=>a+bArr(v)[per],0)}
+function catAmt(i,catId,per){const c=ensureCycle(i);return bArr(c.budget[catId]||[0,0])[per]}
+function cycleIncome(i){return perIncome(i,0)+perIncome(i,1)}
+function cycleAssigned(i){return perAssigned(i,0)+perAssigned(i,1)}
+function activePeriod(i){
+  const cur=cycleCount()-1;if(i!==cur)return null;
+  const c=ensureCycle(i);const t=todayISO();
+  return t>=c.paychecks[1].date?1:0;
+}
+function periodRange(i,per){
+  const c=ensureCycle(i),r=cycleRange(i);
+  if(per===0){const end=new Date(toDate(c.paychecks[1].date).getTime()-DAY);return{start:c.paychecks[0].date,end:iso(end)}}
+  return{start:c.paychecks[1].date,end:r.end};
+}
+function nextPaydayInfo(i,per){
+  const c=ensureCycle(i);
+  let d;
+  if(per===0)d=c.paychecks[1].date;
+  else{const nr=cycleRange(i+1);d=nr.start}
+  const days=Math.max(0,Math.round((toDate(d)-toDate(todayISO()))/DAY));
+  return{date:d,days};
+}
 
 /* ---------- accounts ---------- */
 const sumA=k=>S.accounts[k].reduce((a,x)=>a+(+x.balance||0),0);
@@ -304,7 +323,7 @@ const netWorth=()=>sumA("investments")+sumA("assets")-sumA("liabilities");
 /* ---------- navigation ---------- */
 function showTab(t){view.tab=t;document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   $("tab-"+t).classList.add("active");
-  ["dash","budget","exp","acct"].forEach(k=>$("tb-"+k).classList.toggle("on",k===t));
+  ["dash","budget","acct"].forEach(k=>$("tb-"+k).classList.toggle("on",k===t));
   window.scrollTo(0,0);render()}
 function shiftCycle(d){const max=cycleCount()-1;view.cycle=Math.min(max,Math.max(0,view.cycle+d));render()}
 
@@ -312,109 +331,95 @@ function shiftCycle(d){const max=cycleCount()-1;view.cycle=Math.min(max,Math.max
 function render(){
   if(!S){$("setup").classList.add("active");return}
   ensureUpTo(cycleCount()-1);
-  const cur=cycleCount()-1;
-  if(view.tab==="dash")renderDash(cur);
+  if(view.tab==="dash")renderDash();
   if(view.tab==="budget")renderBudget();
-  if(view.tab==="exp")renderExpenses();
   if(view.tab==="acct")renderAccounts();
   save();
 }
-function renderDash(cur){
+function renderSplitBar(barId,legId){
+  const inv=sumA("investments"),ast=sumA("assets"),lia=sumA("liabilities"),tot=inv+ast+lia;
+  if(tot>0){
+    const w=v=>Math.max(v>0?2:0,v/tot*100);
+    $(barId).innerHTML=`<span style="width:${w(inv)}%;background:#5DCAA5"></span><span style="width:${w(ast)}%;background:#2E7D64"></span><span style="width:${w(lia)}%;background:#F26D6D"></span>`;
+    $(legId).innerHTML=`<span><span class="dot" style="background:#5DCAA5"></span>Investments ${money0(inv)}</span><span><span class="dot" style="background:#2E7D64"></span>Assets ${money0(ast)}</span><span><span class="dot" style="background:#F26D6D"></span>Debt ${money0(lia)}</span>`;
+  }else{$(barId).innerHTML="";$(legId).innerHTML=`<span>Add balances in Accounts to see your breakdown</span>`}
+}
+function payListHTML(i,per){
+  const items=S.categories.map(c=>({id:c.id,n:c.name,v:catAmt(i,c.id,per),col:catColor(c.id)}))
+    .filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+  if(!items.length)return{html:`<div class="empty">Nothing planned for this period</div>`,total:0,count:0};
+  const total=items.reduce((a,x)=>a+x.v,0);
+  const html=items.map(x=>`<div class="rowline" style="padding:9px 0">
+      <span style="font-size:14px"><span class="dot" style="background:${x.col}"></span>${esc(x.n)}</span>
+      <span style="font-size:14px;font-weight:600">${money(x.v)}</span></div>`).join("")+
+    `<div class="rowline" style="padding:10px 0"><span style="font-weight:700">Total</span><span style="font-weight:700;color:var(--mint)">${money(total)}</span></div>`;
+  return{html,total,count:items.length};
+}
+function renderDash(){
+  const cur=cycleCount()-1,per=activePeriod(cur)??0;
   $("dashDate").textContent=new Date().toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric"});
   $("dashNW").textContent=money0(netWorth());
-  $("dashInv").textContent=money0(sumA("investments"));
-  $("dashAst").textContent=money0(sumA("assets"));
-  $("dashLia").textContent=money0(-sumA("liabilities"));
-  $("dashCycleLabel").textContent=cycleLabel(cur);
-  const spent=cycleSpent(cur),bud=cycleAssigned(cur),inc=cycleIncome(cur);
-  $("dashSpent").textContent=money0(spent);
-  $("dashIncome").textContent=money0(inc);
-  const left=bud-spent;
-  $("dashLeft").textContent=money0(left);$("dashLeft").className="v "+(left<0?"neg":"pos");
-  $("dashBudgeted").textContent="Budget "+money0(bud);
-  const pct=bud>0?Math.min(100,spent/bud*100):0;
-  $("dashPct").textContent=bud>0?Math.round(spent/bud*100)+"% used":"";
-  $("dashBar").style.width=pct+"%";$("dashBar").className=spent>bud?"over":"";
-  const cyc=ensureCycle(cur);
-  const per=S.categories.map(c=>({id:c.id,n:c.name,v:catSpent(cur,c.id),b:+cyc.budget[c.id]||0,col:catColor(c.id)}))
-    .filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
-  $("dashTopCats").innerHTML=per.length?per.map(x=>{
-    const over=x.b>0&&x.v>x.b;
-    const meta=x.b>0?(over?money0(x.v-x.b)+" over":money0(x.b-x.v)+" left"):"no budget set";
-    return `<button style="display:block;width:100%;text-align:left;padding:8px 0" onclick="goCategory('${x.id}')">
-      <div class="row"><span style="font-size:14px"><span class="dot" style="background:${x.col}"></span>${esc(x.n)}</span>
-      <span style="font-size:13px;font-weight:600">${money0(x.v)}<span class="muted" style="font-weight:400"> of ${money0(x.b)}</span></span></div>
-      <div class="bar"><i class="${over?"over":""}" style="width:${x.b>0?Math.min(100,x.v/x.b*100):100}%${over?"":";background:"+x.col}"></i></div>
-      <div class="row" style="margin-top:4px"><span class="tiny">tap to view expenses</span><span class="tiny ${over?"neg":""}">${meta}</span></div>
-    </button>`}).join(""):`<div class="empty">No spending yet this cycle</div>`;
-  let h="";for(let i=cur-1;i>=0&&i>=cur-12;i--){const s=cycleSpent(i),b=cycleAssigned(i);
-    h+=`<div class="rowline"><div><div style="font-size:14px;font-weight:600">${cycleLabel(i)}</div><div class="tiny">budget ${money0(b)}</div></div><div style="text-align:right"><div style="font-weight:600">${money0(s)}</div><div class="tiny ${s>b?"neg":"pos"}">${s>b?money0(s-b)+" over":money0(b-s)+" under"}</div></div></div>`}
-  $("dashHistory").innerHTML=h||`<div class="empty">History appears after your first cycle ends</div>`;
+  renderSplitBar("nwBarD","nwLegendD");
+  const c=ensureCycle(cur),p=c.paychecks[per],pr=periodRange(cur,per);
+  $("dashPeriodChip").textContent=esc(p.label);
+  $("dashPeriodRange").textContent=fmtDate(pr.start)+" – "+fmtDate(pr.end)+" · cycle "+cycleLabel(cur);
+  const net=perIncome(cur,per),asg=perAssigned(cur,per),left=net-asg;
+  $("dashPNet").textContent=money0(net);
+  $("dashPAssigned").textContent=money0(asg);
+  $("dashPLeft").textContent=money0(left);
+  $("dashPLeft").className="v "+(Math.abs(left)<0.005?"pos":left<0?"neg":"");
+  const nx=nextPaydayInfo(cur,per);
+  $("dashNextPay").textContent="Next paycheck "+fmtDateY(nx.date);
+  $("dashDays").textContent=nx.days===0?"today":"in "+nx.days+" day"+(nx.days===1?"":"s");
+  const cL=payListHTML(cur,per);
+  $("dashPayList").innerHTML=cL.html;
+  $("dashPayCount").textContent=cL.count?cL.count+" payments · "+money0(cL.total):"";
+  const nper=per===0?1:0, nCycle=per===0?cur:cur+1;
+  ensureCycle(nCycle);
+  const np=ensureCycle(nCycle).paychecks[nper],nL=payListHTML(nCycle,nper);
+  $("dashNextList").innerHTML=`<div class="rowline" style="padding:6px 0 10px"><span class="muted">${esc(np.label)} · lands ${fmtDate(np.date)}</span><span class="tiny">${nL.count} payments</span></div>`+nL.html;
 }
 function renderBudget(){
-  const i=view.cycle,c=ensureCycle(i),cur=cycleCount()-1;
+  const i=view.cycle,c=ensureCycle(i),cur=cycleCount()-1,ap=activePeriod(i);
   $("budCycleLabel").textContent=cycleLabel(i)+(i===cur?" · current":"");
   $("budPrev").disabled=i===0;$("budNext").disabled=i===cur;
-  $("payList").innerHTML=c.paychecks.map(p=>`
+  $("payList").innerHTML=c.paychecks.map((p,pi)=>`
     <div class="paycard" onclick="openPaycheck('${p.id}')">
-      <div class="row"><span style="font-weight:700">${esc(p.label)}</span><span class="tiny">${fmtDate(p.date)} · tap to edit</span></div>
+      <div class="row"><span style="font-weight:700">${esc(p.label)}${ap===pi?' <span class="chip on" style="font-size:10px">current</span>':""}</span><span class="tiny">${fmtDate(p.date)} · tap to edit</span></div>
       <div class="row"><span class="muted">Gross pay</span><span>${money(p.gross)}</span></div>
-      <div class="row"><span class="muted">Health insurance</span><span>−${money(p.health).replace("$","$")}</span></div>
+      <div class="row"><span class="muted">Health insurance</span><span>−${money(p.health)}</span></div>
+      <div class="row"><span class="muted">Life insurance</span><span>−${money(p.life)}</span></div>
       <div class="row"><span class="muted">Retirement</span><span>−${money(p.retire)}</span></div>
       <div class="row"><span class="muted">Pre-tax pay</span><span>${money(payTaxable(p))}</span></div>
       <div class="row"><span class="muted">Taxes</span><span>−${money(p.taxes)}</span></div>
       <div class="row" style="border-top:1px solid var(--line);margin-top:4px;padding-top:7px"><span style="font-weight:700">Net pay</span><span style="font-weight:700;color:var(--mint)">${money(payNet(p))}</span></div>
     </div>`).join("");
   $("extraList").innerHTML=c.extras.map(e=>`
-    <div class="rowline"><div><div class="exp-desc">${esc(e.desc)}</div><div class="exp-meta">Additional income</div></div>
-    <div class="row" style="gap:6px"><span style="font-weight:600">${money(e.amount)}</span><button class="iconbtn danger" onclick="delExtra('${e.id}')">Delete</button></div></div>`).join("");
-  const inc=cycleIncome(i),asg=cycleAssigned(i),left=inc-asg;
-  $("zbIncome").textContent=money(inc);$("zbAssigned").textContent=money(asg);
-  $("zbLeft").textContent=money(left);$("zbLeft").className="mid "+(Math.abs(left)<0.005?"pos":left<0?"neg":"");
+    <div class="rowline"><div><div style="font-size:15px;font-weight:600">${esc(e.desc)}</div><div class="tiny">Additional income · ${esc(c.paychecks[+e.per||0].label)}</div></div>
+    <div class="row" style="gap:6px"><span style="font-weight:600">${money(e.amount)}</span><button class="iconbtn danger" onclick="event.stopPropagation();delExtra('${e.id}')">Delete</button></div></div>`).join("");
+  const rows=[0,1].map(per=>{
+    const net=perIncome(i,per),asg=perAssigned(i,per),left=net-asg;
+    const cls=Math.abs(left)<0.005?"pos":left<0?"neg":"";
+    return `<div class="rowline"><span style="font-weight:600">${esc(c.paychecks[per].label)}${ap===per?' <span class="chip on" style="font-size:10px">current</span>':""}</span>
+      <span style="text-align:right"><span class="muted">net ${money0(net)} · planned ${money0(asg)}</span><br><span class="${cls}" style="font-weight:700">${Math.abs(left)<0.005?"balanced ✓":money(left)+(left<0?" over":" to assign")}</span></span></div>`;
+  }).join("");
+  const tI=cycleIncome(i),tA=cycleAssigned(i),tL=tI-tA;
+  $("zbTable").innerHTML=rows+`<div class="rowline"><span style="font-weight:700">Cycle total</span>
+    <span style="text-align:right"><span class="muted">net ${money0(tI)} · planned ${money0(tA)}</span><br><span class="${Math.abs(tL)<0.005?"pos":tL<0?"neg":""}" style="font-weight:700">${Math.abs(tL)<0.005?"balanced ✓":money(tL)+(tL<0?" over":" to assign")}</span></span></div>`;
   $("catList").innerHTML=S.categories.length?S.categories.map(ct=>{
-    const a=+c.budget[ct.id]||0,sp=catSpent(i,ct.id),over=sp>a&&a>0,col=catColor(ct.id);
-    return `<div style="padding:10px 0;border-bottom:1px solid var(--line)">
+    const a=bArr(c.budget[ct.id]||[0,0]),tot=a[0]+a[1],col=catColor(ct.id);
+    return `<div style="padding:12px 0;border-bottom:1px solid var(--line)">
       <div class="row"><button style="font-size:15px;font-weight:600;text-align:left" onclick="openEditCategory('${ct.id}')"><span class="dot" style="background:${col}"></span>${esc(ct.name)}</button>
-      <input class="amt-input" type="number" inputmode="decimal" step="0.01" value="${a||""}" placeholder="0" onchange="setBudget('${ct.id}',this.value)"></div>
-      <button style="display:block;width:100%;text-align:left" onclick="goCategory('${ct.id}')">
-      <div class="bar"><i class="${over?"over":""}" style="width:${a>0?Math.min(100,sp/a*100):sp>0?100:0}%${over?"":";background:"+col}"></i></div>
-      <div class="row" style="margin-top:4px"><span class="tiny">spent ${money0(sp)} · tap for detail</span><span class="tiny ${over?"neg":""}">${over?money0(sp-a)+" over":money0(a-sp)+" left"}</span></button></div>
-    </div>`}).join(""):`<div class="empty">Add your first category to start assigning dollars</div>`;
-}
-function setExpFilter(id){view.expFilter=id;render()}
-function renderExpenses(){
-  const i=view.cycle,cur=cycleCount()-1;
-  $("expCycleLabel").textContent=cycleLabel(i)+(i===cur?" · current":"");
-  $("expPrev").disabled=i===0;$("expNext").disabled=i===cur;
-  if(view.expFilter&&!S.categories.some(c=>c.id===view.expFilter))view.expFilter="";
-  const all=cycleExpenses(i);
-  const list=all.filter(e=>!view.expFilter||e.catId===view.expFilter)
-    .sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
-  const tot=list.reduce((s,e)=>s+(+e.amount||0),0);
-  $("expTotalSub").textContent=view.expFilter
-    ?money(tot)+" on "+catName(view.expFilter)+" this cycle"
-    :money(tot)+" spent this cycle";
-  const chipCats=[...S.categories].sort((a,b)=>catSpent(i,b.id)-catSpent(i,a.id)||a.name.localeCompare(b.name));
-  $("expChips").innerHTML=`<button class="fchip ${view.expFilter?"":"on"}" onclick="setExpFilter('')">All</button>`+
-    chipCats.map(c=>`<button class="fchip ${view.expFilter===c.id?"on":""}" onclick="setExpFilter('${c.id}')"><span class="dot" style="background:${catColor(c.id)};margin-right:5px"></span>${esc(c.name)}</button>`).join("");
-  if(!list.length){$("expList").innerHTML=`<div class="empty">${view.expFilter?"No "+esc(catName(view.expFilter))+" expenses this cycle":"No expenses in this cycle yet"}</div>`;return}
-  let html="",lastDate="";
-  list.forEach(e=>{
-    if(e.date!==lastDate){html+=`<div class="datehead">${fmtDateY(e.date)}</div>`;lastDate=e.date}
-    html+=`<button class="card" style="display:block;width:100%;text-align:left;margin-top:8px;padding:12px 14px" onclick="openEditExpense('${e.id}')"><div class="row">
-      <div style="min-width:0"><div class="exp-desc">${esc(e.desc)}</div><div class="exp-meta" style="color:${catColor(e.catId)}">${esc(catName(e.catId))}</div></div>
-      <div style="text-align:right;flex:none"><div style="font-weight:700">${money(e.amount)}</div><div class="tiny">tap to edit</div></div>
-    </div></button>`});
-  $("expList").innerHTML=html;
+      <span style="font-weight:700">${money(tot)}</span></div>
+      <div class="pgrid">
+        <div class="pcol"><div class="pl">${esc(c.paychecks[0].label)}</div><input class="amt-input" type="number" inputmode="decimal" step="0.01" value="${a[0]||""}" placeholder="0" onchange="setBudgetP('${ct.id}',0,this.value)"></div>
+        <div class="pcol"><div class="pl">${esc(c.paychecks[1].label)}</div><input class="amt-input" type="number" inputmode="decimal" step="0.01" value="${a[1]||""}" placeholder="0" onchange="setBudgetP('${ct.id}',1,this.value)"></div>
+      </div>
+    </div>`}).join(""):`<div class="empty">Add your first category to start planning payments</div>`;
 }
 function renderAccounts(){
   $("acctNW").textContent=money(netWorth());
-  const inv=sumA("investments"),ast=sumA("assets"),lia=sumA("liabilities"),tot=inv+ast+lia;
-  if(tot>0){
-    const w=v=>Math.max(v>0?2:0,v/tot*100);
-    $("nwBar").innerHTML=`<span style="width:${w(inv)}%;background:#5DCAA5"></span><span style="width:${w(ast)}%;background:#2E7D64"></span><span style="width:${w(lia)}%;background:#F26D6D"></span>`;
-    $("nwLegend").innerHTML=`<span><span class="dot" style="background:#5DCAA5"></span>Investments ${money0(inv)}</span><span><span class="dot" style="background:#2E7D64"></span>Assets ${money0(ast)}</span><span><span class="dot" style="background:#F26D6D"></span>Debt ${money0(lia)}</span>`;
-  }else{$("nwBar").innerHTML="";$("nwLegend").innerHTML=`<span>Add balances below to see your breakdown</span>`}
+  renderSplitBar("nwBar","nwLegend");
   const sec=(k,neg)=>$("list"+k[0].toUpperCase()+k.slice(1)).innerHTML=S.accounts[k].length?S.accounts[k].map(a=>`
     <div class="rowline"><button style="font-size:15px;font-weight:600;text-align:left" onclick="openEditAccount('${k}','${a.id}')">${esc(a.name)}</button>
     <span style="font-weight:600" class="${neg?"neg":""}">${neg?"−":""}${money(a.balance)}</span></div>`).join("")
@@ -428,13 +433,14 @@ function renderAccounts(){
 function sheet(html){$("sheet").innerHTML=html;$("overlay").classList.add("show")}
 function closeSheet(){$("overlay").classList.remove("show")}
 function fld(label,inner){return `<label class="f">${label}${inner}</label>`}
-function catOptions(sel){return `<option value="">Uncategorized</option>`+S.categories.map(c=>`<option value="${c.id}" ${c.id===sel?"selected":""}>${esc(c.name)}</option>`).join("")}
 
 function openPaycheck(pid){
   const c=ensureCycle(view.cycle),p=c.paychecks.find(x=>x.id===pid);if(!p)return;
-  sheet(`<h3>${esc(p.label)}</h3><p class="muted">${fmtDateY(p.date)} · changes apply to this cycle onward when carried forward.</p>
+  sheet(`<h3>${esc(p.label)}</h3><p class="muted">${fmtDateY(p.date)} · carried into future cycles automatically.</p>
+    ${fld("Label",`<input id="pLabel" value="${esc(p.label)}">`)}
     ${fld("Gross pay",`<input type="number" inputmode="decimal" step="0.01" id="pGross" value="${p.gross||""}">`)}
     ${fld("Health insurance",`<input type="number" inputmode="decimal" step="0.01" id="pHealth" value="${p.health||""}">`)}
+    ${fld("Life insurance",`<input type="number" inputmode="decimal" step="0.01" id="pLife" value="${p.life||""}">`)}
     ${fld("Retirement",`<input type="number" inputmode="decimal" step="0.01" id="pRetire" value="${p.retire||""}">`)}
     ${fld("Taxes",`<input type="number" inputmode="decimal" step="0.01" id="pTaxes" value="${p.taxes||""}">`)}
     ${fld("Paycheck date",`<input type="date" id="pDate" value="${p.date}">`)}
@@ -442,33 +448,41 @@ function openPaycheck(pid){
 }
 function savePaycheck(pid){
   const c=ensureCycle(view.cycle),p=c.paychecks.find(x=>x.id===pid);if(!p)return;
-  p.gross=+$("pGross").value||0;p.health=+$("pHealth").value||0;p.retire=+$("pRetire").value||0;p.taxes=+$("pTaxes").value||0;
+  p.label=$("pLabel").value.trim()||p.label;
+  p.gross=+$("pGross").value||0;p.health=+$("pHealth").value||0;p.life=+$("pLife").value||0;
+  p.retire=+$("pRetire").value||0;p.taxes=+$("pTaxes").value||0;
   if($("pDate").value)p.date=$("pDate").value;
+  if(toDate(c.paychecks[1].date)<=toDate(c.paychecks[0].date))toast("Heads up: Paycheck 2 date should be after Paycheck 1");
   closeSheet();render();toast("Paycheck saved")
 }
 function openExtraIncome(){
+  const c=ensureCycle(view.cycle);
   sheet(`<h3>Additional income</h3><p class="muted">One-off income for this cycle only.</p>
     ${fld("Description",`<input id="xDesc" placeholder="Bonus, refund, side income">`)}
     ${fld("Amount",`<input type="number" inputmode="decimal" step="0.01" id="xAmt">`)}
+    ${fld("Applies to",`<select id="xPer"><option value="0">${esc(c.paychecks[0].label)}</option><option value="1">${esc(c.paychecks[1].label)}</option></select>`)}
     <div class="btnrow"><button class="btn" onclick="saveExtra()">Add</button></div>`)
 }
 function saveExtra(){
   const d=$("xDesc").value.trim(),a=+$("xAmt").value;
   if(!d||!(a>0)){toast("Enter a description and amount");return}
-  ensureCycle(view.cycle).extras.push({id:uid(),desc:d,amount:a});closeSheet();render()
+  ensureCycle(view.cycle).extras.push({id:uid(),desc:d,amount:a,per:+$("xPer").value||0});
+  closeSheet();render()
 }
 function delExtra(id){const c=ensureCycle(view.cycle);c.extras=c.extras.filter(e=>e.id!==id);render()}
 
 function openAddCategory(){
+  const c=ensureCycle(view.cycle);
   sheet(`<h3>New category</h3>
     ${fld("Name",`<input id="cName" placeholder="Rent, groceries, savings">`)}
-    ${fld("Assigned this cycle",`<input type="number" inputmode="decimal" step="0.01" id="cAmt" placeholder="0">`)}
+    ${fld(esc(c.paychecks[0].label)+" amount",`<input type="number" inputmode="decimal" step="0.01" id="cAmt0" placeholder="0">`)}
+    ${fld(esc(c.paychecks[1].label)+" amount",`<input type="number" inputmode="decimal" step="0.01" id="cAmt1" placeholder="0">`)}
     <div class="btnrow"><button class="btn" onclick="saveNewCategory()">Add category</button></div>`)
 }
 function saveNewCategory(){
   const n=$("cName").value.trim();if(!n){toast("Enter a name");return}
   const id=uid();S.categories.push({id,name:n});
-  ensureCycle(view.cycle).budget[id]=+$("cAmt").value||0;
+  ensureCycle(view.cycle).budget[id]=[+$("cAmt0").value||0,+$("cAmt1").value||0];
   closeSheet();render();toast("Category added")
 }
 function openEditCategory(id){
@@ -476,60 +490,19 @@ function openEditCategory(id){
   sheet(`<h3>Edit category</h3>
     ${fld("Name",`<input id="cName" value="${esc(c.name)}">`)}
     <div class="btnrow"><button class="btn" onclick="renameCategory('${id}')">Save</button></div>
-    <div class="btnrow"><button class="btn ghost danger" onclick="deleteCategory('${id}')">Delete category</button></div>
-    <p class="tiny" style="margin-top:10px">Deleting keeps past expenses but marks them uncategorized.</p>`)
+    <div class="btnrow"><button class="btn ghost danger" onclick="deleteCategory('${id}')">Delete category</button></div>`)
 }
 function renameCategory(id){const c=S.categories.find(x=>x.id===id);const n=$("cName").value.trim();
   if(!n){toast("Enter a name");return}c.name=n;closeSheet();render()}
 function deleteCategory(id){
-  if(!confirm("Delete this category? Its budget amounts are removed; expenses become uncategorized."))return;
+  if(!confirm("Delete this category and its planned amounts in every cycle?"))return;
   S.categories=S.categories.filter(c=>c.id!==id);
   Object.values(S.cycles).forEach(cy=>delete cy.budget[id]);
-  S.expenses.forEach(e=>{if(e.catId===id)e.catId=""});
   closeSheet();render();toast("Category deleted")
 }
-function setBudget(catId,v){ensureCycle(view.cycle).budget[catId]=+v||0;render()}
-
-function openAddExpense(){
-  const r=cycleRange(view.cycle);
-  const def=(todayISO()>=r.start&&todayISO()<=r.end)?todayISO():r.start;
-  sheet(`<h3>Add expense</h3>
-    ${fld("Amount",`<input type="number" inputmode="decimal" step="0.01" id="eAmt" autofocus>`)}
-    ${fld("Description",`<input id="eDesc" placeholder="Coffee, gas, rent">`)}
-    ${fld("Category",`<select id="eCat">${catOptions("")}</select>`)}
-    ${fld("Date",`<input type="date" id="eDate" value="${def}">`)}
-    <div class="btnrow"><button class="btn" onclick="saveExpense()">Add expense</button></div>`)
-}
-function saveExpense(){
-  const a=+$("eAmt").value,d=$("eDesc").value.trim(),dt=$("eDate").value;
-  if(!(a>0)){toast("Enter an amount");return}
-  if(!dt){toast("Pick a date");return}
-  S.expenses.push({id:uid(),date:dt,desc:d||"Expense",amount:a,catId:$("eCat").value});
-  view.cycle=Math.min(cycleCount()-1,cycleIndexFor(dt));
-  closeSheet();render();toast("Expense added")
-}
-function openEditExpense(id){
-  const e=S.expenses.find(x=>x.id===id);if(!e)return;
-  sheet(`<h3>Edit expense</h3>
-    ${fld("Amount",`<input type="number" inputmode="decimal" step="0.01" id="eAmt" value="${e.amount}">`)}
-    ${fld("Description",`<input id="eDesc" value="${esc(e.desc)}">`)}
-    ${fld("Category",`<select id="eCat">${catOptions(e.catId)}</select>`)}
-    ${fld("Date",`<input type="date" id="eDate" value="${e.date}">`)}
-    <div class="btnrow"><button class="btn" onclick="saveEditExpense('${id}')">Save changes</button></div>
-    <div class="btnrow"><button class="btn ghost danger" onclick="delExpense('${id}')">Delete expense</button></div>`)
-}
-function saveEditExpense(id){
-  const e=S.expenses.find(x=>x.id===id);if(!e)return;
-  const a=+$("eAmt").value,dt=$("eDate").value;
-  if(!(a>0)){toast("Enter an amount");return}
-  if(!dt){toast("Pick a date");return}
-  e.amount=a;e.desc=$("eDesc").value.trim()||"Expense";e.catId=$("eCat").value;e.date=dt;
-  closeSheet();render();toast("Expense updated")
-}
-function delExpense(id){
-  const e=S.expenses.find(x=>x.id===id);if(!e)return;
-  if(!confirm(`Delete "${e.desc}" (${money(e.amount)})? Use this if a charge was reversed.`))return;
-  S.expenses=S.expenses.filter(x=>x.id!==id);closeSheet();render();toast("Expense deleted")
+function setBudgetP(catId,per,v){
+  const c=ensureCycle(view.cycle);
+  const a=bArr(c.budget[catId]||[0,0]);a[per]=+v||0;c.budget[catId]=a;render()
 }
 
 /* ---------- accounts sheets ---------- */
@@ -563,92 +536,10 @@ function deleteAccount(kind,id){
   S.accounts[kind]=S.accounts[kind].filter(x=>x.id!==id);closeSheet();render()
 }
 
-/* ---------- CSV import ---------- */
-function pickCSV(){$("fileCSV").value="";$("fileCSV").click()}
-$("fileCSV").addEventListener("change",ev=>{
-  const f=ev.target.files[0];if(!f)return;
-  const rd=new FileReader();rd.onload=()=>parseCSV(String(rd.result));rd.readAsText(f);
-});
-function splitCSVLine(line){
-  const out=[];let cur="",q=false;
-  for(let i=0;i<line.length;i++){const ch=line[i];
-    if(q){if(ch==='"'){if(line[i+1]==='"'){cur+='"';i++}else q=false}else cur+=ch}
-    else{if(ch==='"')q=true;else if(ch===","){out.push(cur);cur=""}else cur+=ch}}
-  out.push(cur);return out;
-}
-function parseDateLoose(s){
-  s=String(s).trim();if(!s)return null;
-  let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return`${m[1]}-${m[2].padStart(2,"0")}-${m[3].padStart(2,"0")}`;
-  m=s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})/);
-  if(m){let y=+m[3];if(y<100)y+=2000;return`${y}-${m[1].padStart(2,"0")}-${m[2].padStart(2,"0")}`}
-  const d=new Date(s);return isNaN(d)?null:iso(d);
-}
-function parseAmountLoose(s){
-  s=String(s).trim().replace(/[$,]/g,"");if(!s)return null;
-  let neg=false;if(/^\(.*\)$/.test(s)){neg=true;s=s.slice(1,-1)}
-  const n=parseFloat(s);if(isNaN(n))return null;return neg?-n:n;
-}
-function guessCat(desc){
-  const d=desc.toLowerCase();let best="",bestLen=0;
-  S.expenses.forEach(e=>{if(!e.catId||!e.desc)return;const w=e.desc.toLowerCase();
-    if(w.length>=4&&(d.includes(w)||w.includes(d))&&w.length>bestLen){best=e.catId;bestLen=w.length}});
-  return best;
-}
-let csvRows=[];
-function parseCSV(text){
-  const lines=text.split(/\r?\n/).filter(l=>l.trim());
-  if(lines.length<1){toast("Empty file");return}
-  const grid=lines.map(splitCSVLine);
-  let start=0,header=grid[0].map(h=>h.toLowerCase());
-  let di=-1,ai=-1,si=-1,ci=-1,ki=-1;
-  const find=names=>header.findIndex(h=>names.some(n=>h.includes(n)));
-  di=find(["date"]);ai=find(["amount"]);si=find(["description","memo","payee","merchant","name","details"]);
-  ci=find(["debit"]);ki=find(["credit"]);
-  if(di>=0||ai>=0||si>=0||ci>=0)start=1;
-  if(di<0||(ai<0&&ci<0)){
-    const probe=grid[Math.min(start,grid.length-1)];
-    if(di<0)di=probe.findIndex(v=>parseDateLoose(v));
-    if(ai<0&&ci<0)ai=probe.findIndex((v,ix)=>ix!==di&&parseAmountLoose(v)!==null);
-    if(si<0)si=probe.findIndex((v,ix)=>ix!==di&&ix!==ai&&isNaN(parseFloat(v))&&v.trim());
-  }
-  if(di<0||(ai<0&&ci<0)){toast("Couldn't find date and amount columns");return}
-  csvRows=[];
-  for(let r=start;r<grid.length;r++){
-    const row=grid[r];const date=parseDateLoose(row[di]);if(!date)continue;
-    let amt=null;
-    if(ci>=0){const deb=parseAmountLoose(row[ci]);const cre=ki>=0?parseAmountLoose(row[ki]):null;
-      if(deb&&deb!==0)amt=Math.abs(deb);else if(cre&&cre!==0)continue;else continue;}
-    else{amt=parseAmountLoose(row[ai]);if(amt===null||amt===0)continue;
-      if(amt>0&&grid.some(g=>{const v=parseAmountLoose(g[ai]);return v!==null&&v<0})){continue}
-      amt=Math.abs(amt);}
-    const desc=(si>=0?row[si]:"").trim()||"Imported";
-    csvRows.push({date,desc,amount:amt,catId:guessCat(desc),use:true});
-  }
-  if(!csvRows.length){toast("No expenses found in file");return}
-  reviewCSV();
-}
-function reviewCSV(){
-  sheet(`<h3>Review import</h3><p class="muted">${csvRows.length} transactions found. Uncheck any to skip, and set categories.</p>
-    <div style="max-height:46vh;overflow-y:auto;margin-top:8px">${csvRows.map((r,i)=>`
-      <div style="padding:10px 0;border-bottom:1px solid var(--line)">
-        <div class="row"><label style="display:flex;gap:8px;align-items:center;min-width:0;font-size:14px;font-weight:600">
-          <input type="checkbox" style="width:18px;height:18px" ${r.use?"checked":""} onchange="csvRows[${i}].use=this.checked">
-          <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(r.desc)}</span></label>
-          <span style="font-weight:600;flex:none">${money(r.amount)}</span></div>
-        <div class="row" style="margin-top:6px;gap:8px"><span class="tiny" style="flex:none">${fmtDate(r.date)}</span>
-          <select style="padding:7px 8px;font-size:13px" onchange="csvRows[${i}].catId=this.value">${catOptions(r.catId)}</select></div>
-      </div>`).join("")}</div>
-    <div class="btnrow"><button class="btn" onclick="commitCSV()">Import selected</button></div>`)
-}
-function commitCSV(){
-  let n=0;csvRows.forEach(r=>{if(r.use){S.expenses.push({id:uid(),date:r.date,desc:r.desc,amount:r.amount,catId:r.catId});n++}});
-  closeSheet();render();toast(n+" expenses imported")
-}
-
 /* ---------- app lock ---------- */
 async function hashPin(pin,salt){
   const msg=pin+"|"+salt;
-  if(crypto&&crypto.subtle){
+  if(typeof crypto!=="undefined"&&crypto&&crypto.subtle){
     const buf=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(msg));
     return[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,"0")).join("");
   }
@@ -731,7 +622,7 @@ $("fileImport").addEventListener("change",ev=>{
     const d=JSON.parse(String(rd.result));
     if(!d.settings||!d.settings.cycleStart)throw 0;
     if(S&&!confirm("Replace all current data with this backup?"))return;
-    S=d;save();boot();toast("Backup restored");
+    S=d;migrateState();save();boot();toast("Backup restored");
   }catch(e){toast("That file isn't a valid backup")}};
   rd.readAsText(f);
 });
@@ -742,18 +633,19 @@ function finishSetup(){
   if(!d){toast("Pick your payday date");return}
   if(toDate(d)>new Date()){toast("Pick a date in the past");return}
   S=blank(d);
-  [["Rent / mortgage"],["Groceries"],["Dining out"],["Transport"],["Utilities"],["Savings"]].forEach(([n])=>S.categories.push({id:uid(),name:n}));
+  ["Rent / mortgage","Groceries","Eating out","Transport","Utilities","Savings"].forEach(n=>S.categories.push({id:uid(),name:n}));
   save();boot();
 }
 function boot(){
   document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
   if(!S){$("setup").classList.add("active");$("tabbar").classList.add("hidden");
     $("setupDate").value=todayISO();return}
+  migrateState();
   $("tabbar").classList.remove("hidden");
   view.cycle=cycleCount()-1;
   try{localStorage.setItem("__t","1");localStorage.removeItem("__t")}
   catch(e){alert("Heads up: this browser is blocking storage, so data will not persist. Open this app in Safari (not private mode).")}
-  showTab(view.tab==="dash"?"dash":view.tab);
+  showTab(["dash","budget","acct"].includes(view.tab)?view.tab:"dash");
   if(S.settings.pinHash)showLock();
 }
 load();boot();
