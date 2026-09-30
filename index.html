@@ -88,6 +88,10 @@ label.f input,label.f select{margin-top:5px}
 .empty{text-align:center;color:var(--ink3);font-size:14px;padding:26px 10px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--safe-bot) + 92px);background:#F4F6F7;color:#0C0E10;font-size:14px;font-weight:600;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:60}
 .toast.show{opacity:1}
+.payrow{width:100%;text-align:left}
+.ck{width:23px;height:23px;border-radius:50%;border:2px solid var(--line2);flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.ck.on{background:var(--mint);border-color:var(--mint);color:var(--mintink)}
+.paidtxt{color:var(--ink3);text-decoration:line-through}
 .hidden{display:none !important}
 a{color:inherit}
 </style>
@@ -133,6 +137,7 @@ a{color:inherit}
     </div>
     <div class="card">
       <div class="row"><h2>To pay this period</h2><span class="tiny" id="dashPayCount"></span></div>
+      <div class="bar" style="margin-top:2px;margin-bottom:4px"><i id="dashPayBar" style="width:0%"></i></div>
       <div id="dashPayList"></div>
     </div>
     <div class="card">
@@ -260,6 +265,7 @@ function migrateState(){
         else p.life=0;
       }});
     (c.extras||[]).forEach(x=>{if(x.per==null)x.per=0});
+    if(!c.paid||typeof c.paid!=="object")c.paid={};
     const nb={};
     Object.keys(c.budget||{}).forEach(catId=>{
       const v=c.budget[catId];
@@ -283,7 +289,7 @@ function ensureCycle(i){
   const r=cycleRange(i);
   const mkPay=(n,src)=>({id:uid(),label:src&&src.label?src.label:"Paycheck "+n,date:iso(new Date(toDate(r.start).getTime()+(n-1)*14*DAY)),
     gross:src?+src.gross||0:0,taxes:src?+src.taxes||0:0,retire:src?+src.retire||0:0,health:src?+src.health||0:0,life:src?+src.life||0:0});
-  const c={paychecks:[mkPay(1,prev&&prev.paychecks[0]),mkPay(2,prev&&prev.paychecks[1])],extras:[],budget:{}};
+  const c={paychecks:[mkPay(1,prev&&prev.paychecks[0]),mkPay(2,prev&&prev.paychecks[1])],extras:[],budget:{},paid:{}};
   if(prev)Object.keys(prev.budget).forEach(k=>c.budget[k]=bArr(prev.budget[k]));
   else S.categories.forEach(ct=>c.budget[ct.id]=[0,0]);
   S.cycles[i]=c;return c;
@@ -295,6 +301,9 @@ function perExtras(i,per){return ensureCycle(i).extras.filter(x=>(+x.per||0)===p
 function perIncome(i,per){return payNet(ensureCycle(i).paychecks[per])+perExtras(i,per)}
 function perAssigned(i,per){const c=ensureCycle(i);return Object.values(c.budget).reduce((a,v)=>a+bArr(v)[per],0)}
 function catAmt(i,catId,per){const c=ensureCycle(i);return bArr(c.budget[catId]||[0,0])[per]}
+function isPaid(i,catId,per){const c=ensureCycle(i);const v=c.paid[catId];return Array.isArray(v)?!!v[per]:false}
+function togglePaid(i,catId,per){const c=ensureCycle(i);const v=Array.isArray(c.paid[catId])?c.paid[catId]:[false,false];
+  v[per]=!v[per];c.paid[catId]=v;render();if(v[per])toast(catName(catId)+" marked paid")}
 function cycleIncome(i){return perIncome(i,0)+perIncome(i,1)}
 function cycleAssigned(i){return perAssigned(i,0)+perAssigned(i,1)}
 function activePeriod(i){
@@ -344,16 +353,29 @@ function renderSplitBar(barId,legId){
     $(legId).innerHTML=`<span><span class="dot" style="background:#5DCAA5"></span>Investments ${money0(inv)}</span><span><span class="dot" style="background:#2E7D64"></span>Assets ${money0(ast)}</span><span><span class="dot" style="background:#F26D6D"></span>Debt ${money0(lia)}</span>`;
   }else{$(barId).innerHTML="";$(legId).innerHTML=`<span>Add balances in Accounts to see your breakdown</span>`}
 }
-function payListHTML(i,per){
-  const items=S.categories.map(c=>({id:c.id,n:c.name,v:catAmt(i,c.id,per),col:catColor(c.id)}))
-    .filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
-  if(!items.length)return{html:`<div class="empty">Nothing planned for this period</div>`,total:0,count:0};
+function payListHTML(i,per,interactive){
+  const items=S.categories.map(c=>({id:c.id,n:c.name,v:catAmt(i,c.id,per),col:catColor(c.id),pd:isPaid(i,c.id,per)}))
+    .filter(x=>x.v>0);
+  if(!items.length)return{html:`<div class="empty">Nothing planned for this period</div>`,total:0,count:0,paidCount:0,paidTotal:0};
   const total=items.reduce((a,x)=>a+x.v,0);
-  const html=items.map(x=>`<div class="rowline" style="padding:9px 0">
+  const paidTotal=items.reduce((a,x)=>a+(x.pd?x.v:0),0);
+  const paidCount=items.filter(x=>x.pd).length;
+  let html;
+  if(interactive){
+    items.sort((a,b)=>(a.pd-b.pd)||(b.v-a.v));
+    html=items.map(x=>`<button class="rowline payrow" style="padding:10px 0" onclick="togglePaid(${i},'${x.id}',${per})">
+      <span style="display:flex;align-items:center;gap:10px;min-width:0"><span class="ck ${x.pd?"on":""}">${x.pd?"✓":""}</span>
+      <span style="font-size:14px" class="${x.pd?"paidtxt":""}"><span class="dot" style="background:${x.col}"></span>${esc(x.n)}</span></span>
+      <span style="font-size:14px;font-weight:600" class="${x.pd?"paidtxt":""}">${money(x.v)}</span></button>`).join("")+
+    `<div class="rowline" style="padding:10px 0"><span style="font-weight:700">Still to pay</span><span style="font-weight:700;color:${total-paidTotal>0.005?"var(--ink)":"var(--mint)"}">${money(total-paidTotal)}</span></div>`;
+  }else{
+    items.sort((a,b)=>b.v-a.v);
+    html=items.map(x=>`<div class="rowline" style="padding:9px 0">
       <span style="font-size:14px"><span class="dot" style="background:${x.col}"></span>${esc(x.n)}</span>
       <span style="font-size:14px;font-weight:600">${money(x.v)}</span></div>`).join("")+
     `<div class="rowline" style="padding:10px 0"><span style="font-weight:700">Total</span><span style="font-weight:700;color:var(--mint)">${money(total)}</span></div>`;
-  return{html,total,count:items.length};
+  }
+  return{html,total,count:items.length,paidCount,paidTotal};
 }
 function renderDash(){
   const cur=cycleCount()-1,per=activePeriod(cur)??0;
@@ -371,9 +393,10 @@ function renderDash(){
   const nx=nextPaydayInfo(cur,per);
   $("dashNextPay").textContent="Next paycheck "+fmtDateY(nx.date);
   $("dashDays").textContent=nx.days===0?"today":"in "+nx.days+" day"+(nx.days===1?"":"s");
-  const cL=payListHTML(cur,per);
+  const cL=payListHTML(cur,per,true);
   $("dashPayList").innerHTML=cL.html;
-  $("dashPayCount").textContent=cL.count?cL.count+" payments · "+money0(cL.total):"";
+  $("dashPayCount").textContent=cL.count?cL.paidCount+" of "+cL.count+" paid":"";
+  $("dashPayBar").style.width=(cL.total>0?Math.min(100,cL.paidTotal/cL.total*100):0)+"%";
   const nper=per===0?1:0, nCycle=per===0?cur:cur+1;
   ensureCycle(nCycle);
   const np=ensureCycle(nCycle).paychecks[nper],nL=payListHTML(nCycle,nper);

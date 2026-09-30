@@ -1,4 +1,4 @@
-const CACHE = "mybudget-v5";
+const CACHE = "mybudget-v6";
 const ASSETS = ["./", "./index.html", "./icon-180.png", "./icon-512.png", "./manifest.webmanifest"];
 self.addEventListener("install", e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
