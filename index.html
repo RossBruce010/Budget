@@ -73,6 +73,10 @@ label.f input,label.f select{margin-top:5px}
 .pgrid{display:flex;gap:8px;margin-top:8px}
 .pgrid .pcol{flex:1}
 .pgrid .pl{font-size:11px;color:var(--ink3);margin-bottom:4px}
+.payrow{width:100%;text-align:left}
+.ck{width:23px;height:23px;border-radius:50%;border:2px solid var(--line2);flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.ck.on{background:var(--mint);border-color:var(--mint);color:var(--mintink)}
+.paidtxt{color:var(--ink3);text-decoration:line-through}
 /* Tab bar */
 #tabbar{position:fixed;left:0;right:0;bottom:0;background:rgba(12,14,16,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px 8px calc(var(--safe-bot) + 8px)}
 #tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--ink3);font-size:11px;font-weight:600;padding:4px 0;border-radius:10px}
@@ -88,10 +92,6 @@ label.f input,label.f select{margin-top:5px}
 .empty{text-align:center;color:var(--ink3);font-size:14px;padding:26px 10px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(var(--safe-bot) + 92px);background:#F4F6F7;color:#0C0E10;font-size:14px;font-weight:600;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:60}
 .toast.show{opacity:1}
-.payrow{width:100%;text-align:left}
-.ck{width:23px;height:23px;border-radius:50%;border:2px solid var(--line2);flex:none;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
-.ck.on{background:var(--mint);border-color:var(--mint);color:var(--mintink)}
-.paidtxt{color:var(--ink3);text-decoration:line-through}
 .hidden{display:none !important}
 a{color:inherit}
 </style>
@@ -248,7 +248,7 @@ function blank(start){return{settings:{cycleStart:start},categories:[],cycles:{}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast("Warning: could not save data")}}
 function load(){try{const r=localStorage.getItem(KEY);if(r)S=JSON.parse(r)}catch(e){S=null}}
 
-/* ---------- migration: single-amount budgets -> per-payment splits ---------- */
+/* ---------- migration ---------- */
 const XLSPLIT={"Arthur Education":[1000,0],"SoFi Loan":[200,0],"Credit Card":[900,0],"Car Insurance":[130,0],
   "Personal Phones":[125,0],"Groceries":[350,350],"Auto/Transport":[100,100],"Technology":[0,100],
   "Utilities":[0,200],"Rent / mortgage":[0,1988],"Eating Out":[50,50],"Entertainment":[100,100],
@@ -275,6 +275,13 @@ function migrateState(){
       else nb[catId]=bArr(v);
     });
     c.budget=nb;
+    Object.keys(c.paid).forEach(catId=>{
+      const v=c.paid[catId];if(!Array.isArray(v)){delete c.paid[catId];return}
+      c.paid[catId]=v.map((x,per)=>{
+        if(typeof x==="number"&&x>0)return x;
+        if(x===true){const arr=bArr(c.budget[catId]||[0,0]);return arr[per]>0?arr[per]:null}
+        return null;});
+    });
   });
 }
 
@@ -301,9 +308,25 @@ function perExtras(i,per){return ensureCycle(i).extras.filter(x=>(+x.per||0)===p
 function perIncome(i,per){return payNet(ensureCycle(i).paychecks[per])+perExtras(i,per)}
 function perAssigned(i,per){const c=ensureCycle(i);return Object.values(c.budget).reduce((a,v)=>a+bArr(v)[per],0)}
 function catAmt(i,catId,per){const c=ensureCycle(i);return bArr(c.budget[catId]||[0,0])[per]}
-function isPaid(i,catId,per){const c=ensureCycle(i);const v=c.paid[catId];return Array.isArray(v)?!!v[per]:false}
-function togglePaid(i,catId,per){const c=ensureCycle(i);const v=Array.isArray(c.paid[catId])?c.paid[catId]:[false,false];
-  v[per]=!v[per];c.paid[catId]=v;render();if(v[per])toast(catName(catId)+" marked paid")}
+function paidVal(i,catId,per){const c=ensureCycle(i);const v=c.paid[catId];
+  if(!Array.isArray(v))return null;const x=v[per];return(typeof x==="number"&&x>0)?x:null}
+function setPaid(i,catId,per,amt){const c=ensureCycle(i);
+  const v=Array.isArray(c.paid[catId])?c.paid[catId]:[null,null];
+  v[per]=(typeof amt==="number"&&amt>0)?Math.round(amt*100)/100:null;c.paid[catId]=v;}
+function quickTogglePaid(i,catId,per){
+  if(paidVal(i,catId,per)!=null){setPaid(i,catId,per,null);render();return}
+  setPaid(i,catId,per,catAmt(i,catId,per));render();toast(catName(catId)+" paid "+money(catAmt(i,catId,per)))}
+function openPaySheet(i,catId,per){
+  const planned=catAmt(i,catId,per),actual=paidVal(i,catId,per);
+  sheet(`<h3>${esc(catName(catId))}</h3><p class="muted">Planned this period: ${money(planned)}</p>
+    ${fld("Amount actually paid",`<input type="number" inputmode="decimal" step="0.01" id="payAmt" value="${actual!=null?actual:planned}">`)}
+    <div class="btnrow"><button class="btn" onclick="savePayAmt(${i},'${catId}',${per})">${actual!=null?"Update payment":"Mark paid"}</button></div>
+    ${actual!=null?`<div class="btnrow"><button class="btn ghost danger" onclick="setPaid(${i},'${catId}',${per},null);closeSheet();render()">Mark unpaid</button></div>`:""}`)
+}
+function savePayAmt(i,catId,per){
+  const a=+$("payAmt").value;
+  if(!(a>0)){toast("Enter the amount paid, or mark unpaid");return}
+  setPaid(i,catId,per,a);closeSheet();render();toast(catName(catId)+" paid "+money(a))}
 function cycleIncome(i){return perIncome(i,0)+perIncome(i,1)}
 function cycleAssigned(i){return perAssigned(i,0)+perAssigned(i,1)}
 function activePeriod(i){
@@ -354,20 +377,23 @@ function renderSplitBar(barId,legId){
   }else{$(barId).innerHTML="";$(legId).innerHTML=`<span>Add balances in Accounts to see your breakdown</span>`}
 }
 function payListHTML(i,per,interactive){
-  const items=S.categories.map(c=>({id:c.id,n:c.name,v:catAmt(i,c.id,per),col:catColor(c.id),pd:isPaid(i,c.id,per)}))
+  const items=S.categories.map(c=>{const pa=paidVal(i,c.id,per);return{id:c.id,n:c.name,v:catAmt(i,c.id,per),col:catColor(c.id),pd:pa!=null,pa}})
     .filter(x=>x.v>0);
   if(!items.length)return{html:`<div class="empty">Nothing planned for this period</div>`,total:0,count:0,paidCount:0,paidTotal:0};
   const total=items.reduce((a,x)=>a+x.v,0);
-  const paidTotal=items.reduce((a,x)=>a+(x.pd?x.v:0),0);
+  const paidTotal=items.reduce((a,x)=>a+(x.pd?(x.pa??x.v):0),0);
   const paidCount=items.filter(x=>x.pd).length;
   let html;
   if(interactive){
     items.sort((a,b)=>(a.pd-b.pd)||(b.v-a.v));
-    html=items.map(x=>`<button class="rowline payrow" style="padding:10px 0" onclick="togglePaid(${i},'${x.id}',${per})">
-      <span style="display:flex;align-items:center;gap:10px;min-width:0"><span class="ck ${x.pd?"on":""}">${x.pd?"✓":""}</span>
-      <span style="font-size:14px" class="${x.pd?"paidtxt":""}"><span class="dot" style="background:${x.col}"></span>${esc(x.n)}</span></span>
-      <span style="font-size:14px;font-weight:600" class="${x.pd?"paidtxt":""}">${money(x.v)}</span></button>`).join("")+
-    `<div class="rowline" style="padding:10px 0"><span style="font-weight:700">Still to pay</span><span style="font-weight:700;color:${total-paidTotal>0.005?"var(--ink)":"var(--mint)"}">${money(total-paidTotal)}</span></div>`;
+    html=items.map(x=>{
+      const diff=x.pd&&x.pa!=null&&Math.abs(x.pa-x.v)>0.005;
+      return `<div class="rowline" style="padding:10px 0;gap:10px">
+      <button class="ck ${x.pd?"on":""}" onclick="quickTogglePaid(${i},'${x.id}',${per})" aria-label="toggle paid">${x.pd?"✓":""}</button>
+      <button class="payrow" style="display:flex;align-items:center;justify-content:space-between;gap:10px;min-width:0;flex:1" onclick="openPaySheet(${i},'${x.id}',${per})">
+      <span style="font-size:14px" class="${x.pd?"paidtxt":""}"><span class="dot" style="background:${x.col}"></span>${esc(x.n)}</span>
+      <span style="text-align:right"><span style="font-size:14px;font-weight:600" class="${x.pd?"paidtxt":""}">${money(x.pd?(x.pa??x.v):x.v)}</span>${diff?`<br><span class="tiny">plan ${money(x.v)}</span>`:""}</span></button></div>`}).join("")+
+    `<div class="rowline" style="padding:10px 0"><span style="font-weight:700">Still to pay</span><span style="font-weight:700;color:${Math.abs(total-paidTotal)<=0.005?"var(--mint)":total-paidTotal<0?"var(--red)":"var(--ink)"}">${total-paidTotal<-0.005?money(paidTotal-total)+" over plan":money(Math.max(0,total-paidTotal))}</span></div>`;
   }else{
     items.sort((a,b)=>b.v-a.v);
     html=items.map(x=>`<div class="rowline" style="padding:9px 0">
@@ -394,12 +420,15 @@ function renderDash(){
   $("dashNextPay").textContent="Next paycheck "+fmtDateY(nx.date);
   $("dashDays").textContent=nx.days===0?"today":"in "+nx.days+" day"+(nx.days===1?"":"s");
   const cL=payListHTML(cur,per,true);
-  $("dashPayList").innerHTML=cL.html;
+  $("dashPayList").innerHTML=cL.html+
+    `<div class="rowline" style="padding:10px 0"><span class="muted">Paid so far</span><span style="font-weight:600">${money(cL.paidTotal)}<span class="muted"> of ${money0(cL.total)} planned</span></span></div>
+     <div class="rowline" style="padding:10px 0"><span class="muted">Paycheck left after payments</span><span style="font-weight:700" class="${net-cL.paidTotal<-0.005?"neg":""}">${money(net-cL.paidTotal)}</span></div>`;
   $("dashPayCount").textContent=cL.count?cL.paidCount+" of "+cL.count+" paid":"";
   $("dashPayBar").style.width=(cL.total>0?Math.min(100,cL.paidTotal/cL.total*100):0)+"%";
+  $("dashPayBar").className=cL.paidTotal>cL.total+0.005?"over":"";
   const nper=per===0?1:0, nCycle=per===0?cur:cur+1;
   ensureCycle(nCycle);
-  const np=ensureCycle(nCycle).paychecks[nper],nL=payListHTML(nCycle,nper);
+  const np=ensureCycle(nCycle).paychecks[nper],nL=payListHTML(nCycle,nper,false);
   $("dashNextList").innerHTML=`<div class="rowline" style="padding:6px 0 10px"><span class="muted">${esc(np.label)} · lands ${fmtDate(np.date)}</span><span class="tiny">${nL.count} payments</span></div>`+nL.html;
 }
 function renderBudget(){
@@ -520,7 +549,7 @@ function renameCategory(id){const c=S.categories.find(x=>x.id===id);const n=$("c
 function deleteCategory(id){
   if(!confirm("Delete this category and its planned amounts in every cycle?"))return;
   S.categories=S.categories.filter(c=>c.id!==id);
-  Object.values(S.cycles).forEach(cy=>delete cy.budget[id]);
+  Object.values(S.cycles).forEach(cy=>{delete cy.budget[id];if(cy.paid)delete cy.paid[id]});
   closeSheet();render();toast("Category deleted")
 }
 function setBudgetP(catId,per,v){
